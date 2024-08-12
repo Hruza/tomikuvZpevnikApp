@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            {% load static %}   
+            <link rel="stylesheet" href=" {% static './style.css' %}">
+            <link rel="stylesheet" href=" {% static './editSong.css' %}">
+            <title>Tomíkův zpěvník</title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+        </head>
+    <body>
+        <div id="control">
+            <div >
+            <a href="./index.html" id ="return"><span class="back_span">⮌</span></a>
+            </div>
+        </div>
+        <h2 style="text-align:center">Tomíkův zpěvník</h3>
+        <h3 style="text-align:center">&#127925; Přidej písničku &#127925;</h3>
+        <form action="addSong.html" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Submit">
+        </form>     
+        <!-- <a href="./index.html" owner=""><div class="song_ref">Zpět na index<span class="owner"></span></div>         -->
+    </body>
+</html>

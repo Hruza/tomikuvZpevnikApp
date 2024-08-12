@@ -1,0 +1,106 @@
+
+.form{
+    display: grid;
+    grid-template:
+        "name" 55px 
+        "owner" 55px
+        "author" 55px
+        "capo" 55px
+        "song_text" auto
+        "edit" 55px;
+    height: -moz-calc(100vh - 120px);
+    height: -webkit-calc(100vh - 120px);
+    height: -o-calc(100vh - 120px);
+    height: calc(100vh - 120px);
+}
+
+@media (min-width: 600px) {
+.form {
+    display: grid;
+    grid-template:
+        "name owner" 55px
+        "author capo" 55px
+        "song_text song_text" auto
+        "edit edit" 55px;
+    grid-template-columns: 3fr 1fr;
+    max-width: 800px;
+    column-gap: 20px;
+ 
+}
+
+form {
+    display: grid;
+    justify-content: space-around;
+}
+}
+
+.input_field {
+    padding: 5px;
+}
+
+label{
+    color:var(--text2);
+    font:Arial bold;
+}
+
+#control{
+    position:absolute;
+}
+.input_field input {
+    border-radius: 2px;
+    border: 2px solid var(--accent1);
+    width: -moz-calc(100% - 14px);
+    width: -webkit-calc(100% - 14px);
+    width: -o-calc(100% - 14px);
+    width: calc(100% - 14px);
+    padding: 5px;
+}
+
+#form_text textarea {
+    border-radius: 2px;
+    border: 2px solid var(--accent1);
+    display: block;
+    width: -moz-calc(100% - 8px);
+    width: -webkit-calc(100% - 8px);
+    width: -o-calc(100% - 8px);
+    width: calc(100% - 8px);
+    height: -moz-calc(100% - 22px);
+    height: -webkit-calc(100% - 22px);
+    height: -o-calc(100% - 22px);
+    height: calc(100% - 22px);
+    resize: none;
+}
+
+
+#form_name {
+    grid-area: name;
+}
+
+#form_owner {
+    grid-area: owner;
+}
+
+#form_author {
+    grid-area: author;
+}
+
+#form_capo {
+    grid-area: capo;
+}
+
+#form_text {
+    grid-area: song_text;
+}
+
+#form_text label {
+    display: block;
+}
+
+.submit_button{
+    grid-area:edit;
+    border-radius: 2px;
+    border: 2px solid var(--accent2);
+    width: auto;
+    padding: 5px;
+    margin:5px;
+}
