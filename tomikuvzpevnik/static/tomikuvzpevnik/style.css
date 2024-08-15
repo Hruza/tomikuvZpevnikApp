@@ -47,6 +47,8 @@ body {
     break-inside: avoid-column;
     max-width: 480px;
     padding-left: 5px;
+    padding-top: 20px;
+    margin-bottom: 20px;
 }
 
 .control_button {

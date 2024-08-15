@@ -46,7 +46,7 @@
 
       <div class="songtext">
         <div class="song_container">{{ song.capo }}
-          {{ song.lyrics |safe }}</div>
+          {{ song.get_html_text |safe }}</div>
       </div>
     </div>
   </body>
