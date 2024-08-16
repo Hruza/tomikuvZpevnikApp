@@ -13,17 +13,14 @@
     <div class="song">
       <div id="control">
         <div>
-          <a href="./index.html" id="return"><span><img src=" {% static 'tomikuvzpevnik/back_arrow.svg' %}" style="width:50%;height:50%;margin-top:17px;" /></span></a>
+          <a href="{% url 'tomikuvzpevnik:index' %}" id="return"><span><img src=" {% static 'tomikuvzpevnik/back_arrow.svg' %}" style="width:50%;height:50%;margin-top:17px;" /></span></a>
         </div>
         <div id="trans_control">
           <div>
-            <a href="./song.html?song=!random" class="control_button tall_button">Random</a>
+            <a href="{% url  'tomikuvzpevnik:song_random' %}" class="control_button tall_button">Random</a>
           </div>
           <div>
-            <a href="./deleteSong.html?song={{ name2 }}" class="control_button tall_button"><span>Smazat</span></a>
-          </div>
-          <div>
-            <a href="./editSong.html?song={{ name2 }}" class="control_button tall_button"><span>Upravit</span></a>
+            <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="control_button tall_button"><span>Upravit</span></a>
           </div>
           <div class="transposition">
             <div style="grid-area: t_label;">Transpose</div>
@@ -41,12 +38,16 @@
         </div>
       </div>
 
-      <h1 id="song_name">{{ song.title |safe}}</h1>
-      <h3 id="author">{{ song.author }}</h3>
+      <h1 id="song_name">{{ song.title }}</h1>
+      <h3 id="author">{{ song.artist }}</h3>
 
       <div class="songtext">
-        <div class="song_container">{{ song.capo }}
-          {{ song.get_html_text |safe }}</div>
+        
+        <div class="song_container">
+        {% if song.capo != 0 %}
+          <div id="capo">Capo {{ song.capo }}</div>
+        {% endif %}
+          {{ song.get_html_text | safe }}</div>
       </div>
     </div>
   </body>

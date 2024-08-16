@@ -34,6 +34,10 @@ body {
     position: relative;
  }
 
+ .chord_word{
+    white-space: pre;
+ }
+
 .chord .innerchord {  
     position:absolute;
     top: -1.4em;
@@ -256,8 +260,7 @@ a {
     display: flex;
     justify-content: center;
     margin-left: 20px;
-    margin-right: max(-3%,-10px);
-    
+    padding-right: 30px;
 }
 
 .song_container{

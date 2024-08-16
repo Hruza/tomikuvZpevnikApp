@@ -4,9 +4,9 @@
         {% load static %} 
         <script src="{% static 'tomikuvzpevnik/songList.js' %}"></script>   
         <link rel="shortcut icon" type="image/png" href="{% static 'tomikuvzpevnik/favicon.ico' %}"/>         
-        <link rel="stylesheet" href="{% static 'tomikuvzpevnik//style.css' %}">
-        <link rel="stylesheet" href="{% static 'tomikuvzpevnik//menu.css' %}">
-        <link rel="stylesheet" href="{% static 'tomikuvzpevnik//dropdown.css' %}">
+        <link rel="stylesheet" href="{% static 'tomikuvzpevnik/style.css' %}">
+        <link rel="stylesheet" href="{% static 'tomikuvzpevnik/menu.css' %}">
+        <link rel="stylesheet" href="{% static 'tomikuvzpevnik/dropdown.css' %}">
         <title>Tomíkův zpěvník</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +15,7 @@
         <div id="control">
             <div>
                 <div class="pdf_button" id="open_pdf_menu">
-                <img src="{% static 'tomikuvzpevnik//pdf_songbook.svg' %}">
+                    <img src="{% static 'tomikuvzpevnik/pdf_songbook.svg' %}">
                 </div>
             </div>
             <div>
@@ -24,7 +24,7 @@
             <div id="list1" class="dropdown-check-list" tabindex="100">
                 <span class="anchor">Kdo přidal</span>
                 <ul class="items">
-                <li><input type="checkbox" checked/>All </li>
+                    <li><input type="checkbox" checked/>All </li>
                 </ul>
             </div>
         </div>
@@ -39,7 +39,7 @@
                 <div class="menu_item">
                     <a href="./index.html?inProgress=1">
                         <div class="menu_button">
-                            {{ tlacitko }}
+                            
                         </div>
                     </a>
                 </div>
@@ -53,29 +53,29 @@
             </div>
         </div>
         <h2 style="text-align:center">Tomíkův zpěvník</h3>
-        <h3 style="text-align:center">&#127925; Seznam písniček &#127925;</h3>
-        <div class="search">
-            <input type="search" placeholder="Hledat..." id="searchInput"/>
-        </div>
-        <div class="list_container">
-            {% if song_list %}
-            <div class="song_list">
-                {% for song in song_list %}
-                    <div class="song_item" owner="{{ song.owner |safe }}">
+            <h3 style="text-align:center">&#127925; Seznam písniček &#127925;</h3>
+            <div class="search">
+                <input type="search" placeholder="Hledat..." id="searchInput"/>
+            </div>
+            <div class="list_container">
+                {% if song_list %}
+                <div class="song_list">
+                    {% for song in song_list %}
+                    <div class="song_item" owner="{{ song.owner }}">
                         <a href="{% url 'tomikuvzpevnik:song_page' song.id %}">
                             <div class="song_ref">
-                                <span class="song_name">{{ song.title |safe}}</span>
-                                <span class="song_author">{{ song.title |safe}}</span>
-                                <span class="owner">{{ song.owner |safe }}</span>
+                                <span class="song_name">{{ song.title }}</span>
+                                <span class="song_author">{{ song.artist }}</span>
+                                <span class="owner">{{ song.owner }}</span>
                             </div>
                         </a>
                     </div>
-                {% endfor %}
-            </div>
-            {% else %}
+                    {% endfor %}
+                </div>
+                {% else %}
                 Nebyly nalezeny žádné písničky.
-            {% endif %}
-        </div>
-        <script src="{% static './menu.js' %}"></script>
-    </body>
-</html>
+                {% endif %}
+            </div>
+            <script src="{% static 'tomikuvzpevnik/menu.js' %}"></script>   
+        </body>
+        </html>

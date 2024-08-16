@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from tomikuvzpevnik.song_utils.conversions import base_to_html
+from django.utils.html import strip_tags
 
 class Song(models.Model):
     title = models.CharField(max_length=200)
@@ -13,4 +14,4 @@ class Song(models.Model):
         return f"{self.title} by {self.artist}"
     
     def get_html_text(self):
-        return base_to_html(self.lyrics)
+        return base_to_html(strip_tags(self.lyrics))

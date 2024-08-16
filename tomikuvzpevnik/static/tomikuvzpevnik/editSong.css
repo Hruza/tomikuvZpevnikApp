@@ -2,9 +2,8 @@
 .form{
     display: grid;
     grid-template:
-        "name" 55px 
-        "owner" 55px
-        "author" 55px
+        "title" 55px 
+        "artist" 55px
         "capo" 55px
         "song_text" auto
         "edit" 55px;
@@ -18,8 +17,8 @@
 .form {
     display: grid;
     grid-template:
-        "name owner" 55px
-        "author capo" 55px
+        "title title" 55px
+        "artist capo" 55px
         "song_text song_text" auto
         "edit edit" 55px;
     grid-template-columns: 3fr 1fr;
@@ -56,7 +55,7 @@ label{
     padding: 5px;
 }
 
-#form_text textarea {
+.input_field textarea {
     border-radius: 2px;
     border: 2px solid var(--accent1);
     display: block;
@@ -71,28 +70,31 @@ label{
     resize: none;
 }
 
+#err_list{
+    color:#ff2222
+}
 
-#form_name {
-    grid-area: name;
+#form_title {
+    grid-area: title;
 }
 
 #form_owner {
     grid-area: owner;
 }
 
-#form_author {
-    grid-area: author;
+#form_artist {
+    grid-area: artist;
 }
 
 #form_capo {
     grid-area: capo;
 }
 
-#form_text {
+#form_lyrics {
     grid-area: song_text;
 }
 
-#form_text label {
+#form_lyrics label {
     display: block;
 }
 

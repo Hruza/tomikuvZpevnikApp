@@ -14,7 +14,7 @@ function transpose(dir) {
     let type;
     let index;
 
-    let chords = document.getElementsByClassName("chord")
+    let chords = document.getElementsByClassName("innerchord")
     for (let i = 0; i < chords.length; i++) {
         const chord = chords[i];
         tone = chord.getAttribute("tone");
@@ -22,7 +22,7 @@ function transpose(dir) {
         index = notes.indexOf(tone);
         tone = notes[(index + trans + 12) % 12 ];
 
-        chord.getElementsByClassName("innerchord")[0].innerHTML = tone + type;
+        chord.innerHTML = tone + type;
     }
     calibrateChords();
 }
@@ -30,7 +30,10 @@ function transpose(dir) {
 function chordsOverlap(el1, el2) {
     const domElement1 = el1.getBoundingClientRect();
     const domElement2 = el2.getBoundingClientRect();
-    if (domElement2.bottom > domElement1.top && domElement1.bottom > domElement2.top && domElement2.left >= domElement1.left && domElement2.right > domElement1.left){
+    if (domElement2.bottom > domElement1.top && 
+      domElement1.bottom > domElement2.top + 5 && // add 5 to not move chords on a different line
+      domElement2.left >= domElement1.left && 
+      domElement2.right > domElement1.left){
         return Math.max(domElement1.right - domElement2.left+mindist,0);
     }else{
         return 0;
