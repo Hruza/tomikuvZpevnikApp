@@ -42,9 +42,6 @@ label{
     font:Arial bold;
 }
 
-#control{
-    position:absolute;
-}
 .input_field input {
     border-radius: 2px;
     border: 2px solid var(--accent1);

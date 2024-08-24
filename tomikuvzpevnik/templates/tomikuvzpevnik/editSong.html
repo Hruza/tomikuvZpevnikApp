@@ -9,11 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
+    <div style="text-align: center;">
     <div id="control">
       <div>
-        <a href="{% url 'tomikuvzpevnik:index' %}" id="return"><span class="back_span">⮌</span></a>
+        <a href="{% url 'tomikuvzpevnik:song_page' song.id %}" class="control_button tall_button"><span class="back_span">⮌</span></a>
+      </div>
+      <div id="trans_control">
+        <a href="{% url 'tomikuvzpevnik:song_delete' song.id %}" class="control_button tall_button"><span>Smazat</span></a>
       </div>
     </div>
+  </div>
     <h2 style="text-align:center">Tomíkův zpěvník</h2>
     <h3 style="text-align:center">&#127925; Edituj písničku &#127925;</h3>
     <form action="" method="post">

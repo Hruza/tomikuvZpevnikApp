@@ -18,7 +18,7 @@ class IndexView(generic.ListView):
         # Fetch all songs from the database
         songs = Song.objects.all()
         # Set the locale to use for sorting (e.g., 'en_US.UTF-8')
-        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+        locale.setlocale(locale.LC_ALL, 'cs_CZ.UTF-8')
         # Sort songs using locale-aware sorting
         return sorted(songs, key=lambda song: locale.strxfrm(song.title))
 
@@ -53,4 +53,4 @@ def edit_song(request, pk):
     else:
         form = SongEditForm(instance=song)
 
-    return render(request, "tomikuvzpevnik/editSong.html", {'form': form})
+    return render(request, "tomikuvzpevnik/editSong.html", {'form': form, 'song': song})

@@ -1,0 +1,30 @@
+version: "3"
+services:
+  tomikuvzpevnik:
+    build: .
+    platform: linux/amd64
+    volumes:
+      - .:/tomikuvzpevnik
+      - sqlite_data:/tomikuvzpevnik/sqlite_data
+      - /var/www/static/:/var/www/static/
+      - /var/certbot/conf:/etc/letsencrypt/:ro
+    expose: 
+      - "8000"
+    image: hruza/tomikuvzpevnik:rpi
+    container_name: tomikuvzpevnik
+    restart: always
+    command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate --noinput && python3 manage.py collectstatic --noinput && python -m gunicorn --config gunicorn_config.py project.wsgi:application"
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/www/static/:/var/www/static/
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - tomikuvzpevnik
+volumes:
+  sqlite_data:

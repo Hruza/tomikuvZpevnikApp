@@ -17,7 +17,7 @@
         </div>
         <div id="trans_control">
           <div>
-            <a href="{% url  'tomikuvzpevnik:song_random' %}" class="control_button tall_button">Random</a>
+            <a href="{% url 'tomikuvzpevnik:song_random' %}" class="control_button tall_button">Random</a>
           </div>
           <div>
             <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="control_button tall_button"><span>Upravit</span></a>
@@ -42,12 +42,12 @@
       <h3 id="author">{{ song.artist }}</h3>
 
       <div class="songtext">
-        
         <div class="song_container">
-        {% if song.capo != 0 %}
-          <div id="capo">Capo {{ song.capo }}</div>
-        {% endif %}
-          {{ song.get_html_text | safe }}</div>
+          {% if song.capo != 0 %}
+            <div id="capo">Capo {{ song.capo }}</div>
+          {% endif %}
+          {{ song.get_html_text|safe }}
+        </div>
       </div>
     </div>
   </body>

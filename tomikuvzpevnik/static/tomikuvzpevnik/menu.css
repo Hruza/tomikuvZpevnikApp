@@ -40,11 +40,11 @@
     break-inside: avoid-column;
 }
 
-.pdf_button img {
+.button_no_border img {
     width: 40px;
 }
 
-.pdf_button {
+.button_no_border {
     padding: 5px;
     padding-right: 25px;
     padding-left: 20px;
@@ -54,7 +54,7 @@
     border-radius: 8px;
 }
 
-.pdf_button:hover {
+.button_no_border:hover {
     background-color: var(--background2); /* Green */
     color: var(--text1);
 }

@@ -12,16 +12,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <div id="control">
-            <div>
-                <div class="pdf_button" id="open_pdf_menu">
+        <div id="control" style="justify-items: center;grid-template-columns: 1fr 0.5fr 1fr;">
+            <div style="justify-self: start;">
+                <div class="button_no_border" id="open_pdf_menu">
                     <img src="{% static 'tomikuvzpevnik/pdf_songbook.svg' %}">
                 </div>
             </div>
-            <div>
-                <a href="./addSong.html" class="anchor"><span>+</span></a>
+            <div class="button_no_border" style="justify-self: ceter;align-self:center">
+                <a href="./addSong.html" class="anchor"><span style="font-size:25px">+</span></a>
             </div>
-            <div id="list1" class="dropdown-check-list" tabindex="100">
+            <div id="list1" class="dropdown-check-list" style="justify-self: end;" tabindex="100">
                 <span class="anchor">Kdo přidal</span>
                 <ul class="items">
                     <li><input type="checkbox" checked/>All </li>
