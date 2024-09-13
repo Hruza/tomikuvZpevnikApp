@@ -15,17 +15,16 @@
         <div id="control" style="justify-items: center;grid-template-columns: 1fr 0.5fr 1fr;">
             <div style="justify-self: start;">
                 <div class="button_no_border" id="open_pdf_menu">
-                    <img src="{% static 'tomikuvzpevnik/pdf_songbook.svg' %}">
+                    <img src="{% static 'tomikuvzpevnik/icons/pdf_songbook.svg' %}">
                 </div>
             </div>
             <div class="button_no_border" style="justify-self: ceter;align-self:center">
                 <a href="./addSong.html" class="anchor"><span style="font-size:25px">+</span></a>
             </div>
-            <div id="list1" class="dropdown-check-list" style="justify-self: end;" tabindex="100">
-                <span class="anchor">Kdo přidal</span>
-                <ul class="items">
-                    <li><input type="checkbox" checked/>All </li>
-                </ul>
+            <div style="justify-self: end;align-self:center">
+                <div class="button_no_border" id="account-button">
+                    <img src="{% static 'tomikuvzpevnik/icons/account.svg' %}">
+                </div>
             </div>
         </div>
         <div id="hide"></div>
