@@ -1,0 +1,126 @@
+:root {
+    --text1: rgb(0, 0, 0);
+    --text2: rgb(76, 76, 76);
+    --text3: rgb(116, 116, 116);
+    --text4: rgb(181, 181, 181);
+    --background0: rgb(255,255,255);
+    --background1: rgb(255, 255, 255);
+    --background2: rgb(221, 221, 223);
+    --accent1:rgb(136, 136, 136);
+    --accent2:rgb(136, 136, 136);
+    --accent2:rgb(166, 166, 166);
+}
+
+body {
+    background-color: var(--background0);
+    color: var(--text1)
+}
+
+.header{
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    overflow-x: overlay;
+    position: relative;
+}
+
+.header .header-left{
+    display: flex;
+    justify-self:left;
+}
+.header .header-right{
+    display: flex;
+    justify-self:right;
+}
+.header .header-center{
+    display: flex;
+    justify-self:center;
+}
+
+.button_with_border{
+    transition-duration: 0.4s;
+    background-color: var(--background1);
+    color: var(--text2);
+    border-radius: 2px;
+    border: 2px solid var(--accent1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button_with_border:hover {
+    background-color: var(--background2); /* Green */
+    color: var(--text1);
+}
+
+.button_no_border{
+    text-align: center;
+    transition-duration: 0.4s;
+    background-color: var(--background1);
+    border-radius: 8px;
+    border-width: 0;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button_no_border:hover {
+    background-color: var(--background2); /* Green */
+    color: var(--text1);
+}
+
+#popup{
+
+}
+
+a{
+    text-decoration: none;
+    color: var(--text1);
+}
+
+.square_medium{
+    width:60px;
+    height:60px;
+    display:flex;
+}
+
+/* return button */
+
+#return {
+    text-decoration: none;
+    display: inline-block;
+    color: var(--text1);
+    text-align: center;
+    font-size: 30px;
+    width: 80px;
+    height: 58px;
+    transition: all 0.5s;
+    cursor: pointer;
+    position: relative;
+}
+
+#return span {
+    cursor: pointer;
+    display: inline-block;
+    transition: 0.5s;
+}
+
+#return:after {
+    content: 'Index';
+    position: absolute;
+    opacity: 0;
+    top: 17px;
+    font-size: 20px;
+    right: 0px;
+    transition: 0.5s;
+}
+
+#return:hover span {
+    margin-right: 35px;
+    opacity: 0;
+}
+
+#return:hover:after {
+    opacity: 1;
+    right: 20px;
+}

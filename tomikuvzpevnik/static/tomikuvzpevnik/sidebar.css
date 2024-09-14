@@ -1,0 +1,31 @@
+#sidebar {
+    position: fixed;
+    background: var(--background0);
+    height: 100%;
+    width: 200px;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+    left: -200px;
+    transition: 0.3s;
+}
+
+#sidebar.active{
+    left:0px;
+    box-shadow: 0px 0px 10px #aaaaaa;
+}
+
+#sidebar_menu {
+    display: grid;
+    justify-content: center;
+    grid-template-rows: repeat(3, 60px);
+    position: relative;
+    top: 10px;
+    grid-row-gap: 10px;
+    padding: 10px;
+}
+
+.menu_item {
+    width:100%;
+}
+

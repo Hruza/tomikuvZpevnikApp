@@ -35,7 +35,7 @@ def get_random_song(request):
 
 @login_required
 def add_song(request):
-    return render(request, "edit_song.html")
+    return render(request, "tomikuvzpevnik/addSong.html")
 
 
 @login_required

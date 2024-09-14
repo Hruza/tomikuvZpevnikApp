@@ -95,10 +95,9 @@ label{
     display: block;
 }
 
-.submit_button{
+input.button_with_border{
     grid-area:edit;
     border-radius: 2px;
-    border: 2px solid var(--accent2);
     width: auto;
     padding: 5px;
     margin:5px;

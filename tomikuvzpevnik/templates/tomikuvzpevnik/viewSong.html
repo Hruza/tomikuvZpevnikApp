@@ -5,35 +5,32 @@
     <meta charset="UTF-8" />
     {% load static %}
     <link rel="shortcut icon" type="image/png" href="{% static 'tomikuvzpevnik/favicon.ico' %}" />
-    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/style.css' %}" />
+    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/utils.css' %}" />
+    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/songView.css' %}" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src=" {% static 'tomikuvzpevnik/transpose.js' %}"></script>
   </head>
   <body>
     <div class="song">
-      <div id="control">
-        <div>
-          <a href="{% url 'tomikuvzpevnik:index' %}" id="return"><span><img src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}" style="width:50%;height:50%;margin-top:17px;" /></span></a>
+      <div class="header">
+        <div class="header-left">
+          <a href="{% url 'tomikuvzpevnik:index' %}" id="return" class="button_with_border"><span><img src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}" style="width:50%;height:50%;margin-top:17px;" /></span></a>
         </div>
-        <div id="trans_control">
-          <div>
-            <a href="{% url 'tomikuvzpevnik:song_random' %}" class="control_button tall_button">Random</a>
-          </div>
-          <div>
-            <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="control_button tall_button"><span>Upravit</span></a>
-          </div>
-          <div class="transposition">
+        <div class="header-right">
+          <a href="{% url 'tomikuvzpevnik:song_random' %}" class="button_with_border square_medium">Random</a>
+          <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="button_with_border square_medium"><span>Upravit</span></a>
+          <div class="transposition" style="justify-self: end;">
             <div style="grid-area: t_label;">Transpose</div>
             <div style="grid-area: down;text-align: right;">
-              <button onclick="transpose(-1)" class="control_button trans_button">v</button>
+              <button onclick="transpose(-1)" class="button_no_border trans_button">-</button>
             </div>
             <div class="trans" id="trans" style="text-align:center;grid-area: number;">0</div>
             <div style="grid-area: up;text-align: left;">
-              <button onclick="transpose(+1)" class="control_button trans_button">⌃</button>
+              <button onclick="transpose(+1)" class="button_no_border trans_button">+</button>
             </div>
           </div>
           <div>
-            <button onclick="scrollpage()" class="control_button tall_button">Scroll<br />down</button>
+            <button onclick="scrollpage()" class="button_with_border square_medium">Scroll<br />down</button>
           </div>
         </div>
       </div>

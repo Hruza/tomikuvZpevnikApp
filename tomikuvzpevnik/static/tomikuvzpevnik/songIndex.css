@@ -1,0 +1,119 @@
+
+.sidebar_button {
+    width:100%;
+    display:flex;
+}
+
+#open_pdf_menu{
+    padding: 5px;
+    padding-right: 15px;
+    padding-left: 10px;
+}
+
+#account-button{
+    padding: 5px;
+    padding-right: 5px;
+    padding-left: 5px;
+    display:flex;
+}
+
+#open_pdf_menu img {
+    width: 40px;
+}
+
+#account-button img{
+    width: 50px;
+}
+
+.button_no_border:hover {
+    background-color: var(--background2); /* Green */
+    color: var(--text1);
+}
+
+/* Song list */
+
+.song_item{
+    break-inside: avoid-column;
+    border-bottom: 2px solid #f6f6f6;
+}
+
+.song_ref {
+    color: var(--text1);
+    text-decoration: none;
+    text-align: left;
+    padding: 10px;
+    text-align: left;
+    transition: 0.5s;
+    display: grid;
+    grid-template-areas:
+    "name owner"
+    "author owner";
+    grid-template-columns: auto 30px;
+    border-radius: 4px;
+}
+
+.song_ref:hover {
+    background-color: var(--background2);
+    transition: 0.2s;
+}
+       
+/*
+.song_ref:hover {
+    box-shadow: 0 0 6px var(--accent1);
+    transition: 0.1s;
+}
+*/
+
+.list_container {
+    text-align: center;
+    margin-left: min(60px, 5%);
+    margin-right: min(60px, 5%);
+}
+
+.song_list {
+    max-width: 1000px;
+    column-width: 300px;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: auto;
+}
+
+
+.song_ref .owner {
+    font-family: 'Comic Sans MS';
+    color: var(--text4);
+    grid-area: owner;
+    justify-self: right;
+    text-align: right;
+}
+
+.song_ref .song_name {
+    grid-area: name;
+    align-self: center;
+}
+
+.song_ref .song_author {
+    grid-area: author;
+    color: var(--text3);
+    font-style: italic;
+    font-size: small;
+    align-self: center;
+}
+
+
+ /* Search */
+
+ .search {
+    text-align: center;
+    margin-left: min(60px, 5%);
+    margin-right: min(60px, 5%);
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    border-radius: 2px;
+    border: 2px solid var(--accent1);
+    width: 100%;
+    max-width: 300px;
+    padding: 8px;
+    font-size: medium;
+}

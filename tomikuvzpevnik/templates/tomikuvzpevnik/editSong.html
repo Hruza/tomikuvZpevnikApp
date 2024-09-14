@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     {% load static %}
-    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/style.css' %}" />
+    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/utils.css' %}" />
     <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/editSong.css' %}" />
     <title>Tomíkův zpěvník</title>
     <meta charset="UTF-8" />
@@ -10,12 +10,12 @@
   </head>
   <body>
     <div style="text-align: center;">
-    <div id="control">
-      <div>
-        <a href="{% url 'tomikuvzpevnik:song_page' song.id %}" class="control_button tall_button"><span class="back_span">⮌</span></a>
+    <div class="header">
+      <div class="header-left">
+        <a href="{% url 'tomikuvzpevnik:index' %}" id="return" class="button_with_border"><span><img src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}" style="width:50%;height:50%;margin-top:17px;" /></span></a>
       </div>
-      <div id="trans_control">
-        <a href="{% url 'tomikuvzpevnik:song_delete' song.id %}" class="control_button tall_button"><span>Smazat</span></a>
+      <div id="header-right">
+        <a href="{% url 'tomikuvzpevnik:song_delete' song.id %}" class="button_with_border square_medium"><span>Smazat</span></a>
       </div>
     </div>
   </div>
@@ -33,7 +33,7 @@
           <div class="input_field" id="form_{{ field.name }}"{% if field.errors %} style="background-color:#ffaaaa;border-radius:5px;" {% endif %}>
             {{ field.label_tag }} {{ field }}</div>
         {% endfor %}
-        <input type="submit" class="submit_button" value="Edituj!" />
+        <input type="submit" class="button_with_border" value="Edituj!" />
       </div>
     </form>
   </body>
