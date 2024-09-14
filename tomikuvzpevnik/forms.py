@@ -10,6 +10,9 @@ def validate_no_html(value):
             code='invalid'
         )
 
+class AddSongForm(forms.Form):
+    song_url = forms.URLField(label="Song URL", max_length=200) 
+
 class SongEditForm(ModelForm):
     title = forms.CharField(max_length=200,validators=[validate_no_html])
     artist = forms.CharField(max_length=200,validators=[validate_no_html])

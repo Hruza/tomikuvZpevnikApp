@@ -5,8 +5,10 @@ from django.views import generic
 from django.urls import reverse
 from .models import Song
 from random import choice
-from tomikuvzpevnik.forms import SongEditForm 
+from tomikuvzpevnik.forms import SongEditForm
+from tomikuvzpevnik.song_utils.conversions import ultimate_to_base
 import locale
+from .forms import AddSongForm
 
 class IndexView(generic.ListView):
     model = Song
@@ -35,12 +37,32 @@ def get_random_song(request):
 
 @login_required
 def add_song(request):
-    return render(request, "tomikuvzpevnik/addSong.html")
+        # if this is a POST request we need to process the form data
+    if request.method == "POST":
+        # create a form instance and populate it with data from the request:
+        form = AddSongForm(request.POST)
+
+        if form.is_valid():
+            # check whether it's valid:
+            song_data = ultimate_to_base(form.cleaned_data['song_url'])
+            if not song_data is None:
+                request.session['unsaved_song_data'] = song_data
+                return redirect(reverse("tomikuvzpevnik:song_edit", args=(0,)))
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = AddSongForm()
+
+    return render(request, "tomikuvzpevnik/addSong.html", {"form": form})
 
 
 @login_required
 def edit_song(request, pk):
-    song = get_object_or_404(Song, id=pk)
+    if pk == 0:
+        song_data = request.session.get('unsaved_song_data', None)
+        song = Song(**song_data,owner=request.user) 
+    else:
+        song = get_object_or_404(Song, id=pk)
     
     if song.owner != request.user and not request.user.groups.filter(name="Song Admins").exists():
         return redirect(reverse("tomikuvzpevnik:song_page", args=(pk,)))  # Redirect if not authorized

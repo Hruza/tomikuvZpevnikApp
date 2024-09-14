@@ -1,5 +1,7 @@
 import re
 from bs4 import BeautifulSoup
+import requests
+import html
 
 VALID_CHORDS = ["C", "C#","D","D#","E","F", "F#","G","G#","A","B","H","Bb"]
 
@@ -94,3 +96,74 @@ def html_to_base(html_text):
             verses.append(processed_text)
 
     return "\n\n".join(verses)
+
+def ultimate_to_base(url):
+    #TODO: Add check if the URL is really ultimate guitar
+    try:
+        response = requests.get(url)
+    except requests.exceptions.InvalidURL:
+        return ""
+    
+    song_html = response.text
+
+    byArtI = song_html.find('"byArtist": {')
+    byArtE = song_html[byArtI:].find("}")
+    titleI = song_html[byArtI:].find('"name":"')
+    titleE = song_html[titleI+byArtI+8:].find('"')
+    artist = song_html[titleI+byArtI:8+titleI+byArtI+titleE].replace('"name":"','')
+    # print(artist)
+    byArtI = byArtI + byArtE
+    titleI = song_html[byArtI:].find('"name":"')
+    titleE = song_html[titleI+byArtI+8:].find('"')
+    title = song_html[titleI+byArtI:8+titleI+byArtI+titleE].replace('"name":"','')
+
+    firstWord = '<div class="js-store"'
+    lastWord = '&quot;,&quot;revision_id&quot'
+    song_html = song_html[song_html.find(firstWord)+1:]
+    song_html = song_html[:song_html.find(lastWord)]
+    song_html = song_html.replace("\\r\\n","\n")
+
+    song_html = html.unescape(song_html)
+
+    output_text = []
+    chords = []
+    for line in song_html.split("\n")[1:300]:
+        line = line.strip()
+        if line[:6] in ['[Outro','[Intro','[Bridg','[Verse','[Choru','[Pre-C','[Solo]']:
+            # Start of verse
+            if len(output_text)>0:
+                output_text.append("")
+            if line == '[Chorus]':
+                output_text.append("*")
+        elif line.startswith("[tab]"):
+            line = line.removeprefix("[tab]")
+            chords = re.findall("([ ]*)\[ch\]([^\[]*)\[/ch\]",line)
+            chords = [(len(spaces),chord) for spaces,chord in chords]
+        elif line == "":
+            pass
+        else:
+            line = line.removesuffix("[/tab]")   
+
+            line_segments = []
+            start_index = 0
+            for space,chord in chords:
+                space = space + 1
+                line_segments.append(line[start_index:start_index+space])
+                start_index += space
+                line_segments.append(f"[{chord}]") 
+            if start_index < len(line):
+                line_segments.append(line[start_index:])   
+            line = "".join(line_segments)
+
+            line = line.replace("[ch]","[")
+            line = line.replace("[/ch]","]")
+            output_text.append(line)
+            chords = []
+
+
+    return {
+        "title":title,
+        "artist":artist,
+        "lyrics":"\n".join(output_text),
+        "capo":0,
+    }
