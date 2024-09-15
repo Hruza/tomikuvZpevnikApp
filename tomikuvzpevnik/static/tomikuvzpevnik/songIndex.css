@@ -48,7 +48,7 @@
     grid-template-areas:
     "name owner"
     "author owner";
-    grid-template-columns: auto 30px;
+    grid-template-columns: auto 3ch;
     border-radius: 4px;
 }
 
@@ -79,10 +79,11 @@
 
 
 .song_ref .owner {
-    font-family: 'Comic Sans MS';
+    font-family: monospace;
+    font-size: large;
     color: var(--text4);
     grid-area: owner;
-    justify-self: right;
+    overflow: hidden;
     text-align: right;
 }
 
