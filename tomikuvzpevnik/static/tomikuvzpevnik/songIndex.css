@@ -50,6 +50,7 @@
     "author owner";
     grid-template-columns: auto 3ch;
     border-radius: 4px;
+    align-items: center;
 }
 
 .song_ref:hover {
