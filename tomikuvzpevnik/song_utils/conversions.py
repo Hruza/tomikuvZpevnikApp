@@ -133,12 +133,16 @@ def ultimate_to_base(url):
     output_text = []
     chords = []
     for line in song_html.split("\n")[1:300]:
-        line = line.strip()
-        if line[:6] in ['[Outro','[Intro','[Bridg','[Verse','[Choru','[Pre-C','[Solo]']:
+        line = line.rstrip()
+        if not line.startswith("[tab]") and line.startswith("[") and line.endswith("]"):
+            line = line.strip("[]")
             # Start of verse
             if len(output_text)>0:
                 output_text.append("")
-            if line == '[Chorus]':
+            if not line[:5] in ['Bridg','Verse','Choru','Pre-C']:
+                # using sart because verse can be numbered
+                output_text.append("{" + line + "}")
+            elif line == 'Chorus':
                 output_text.append("*")
         elif line.startswith("[tab]"):
             line = line.removeprefix("[tab]")
