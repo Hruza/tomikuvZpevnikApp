@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import generic
+from django.http import HttpRequest
 from django.urls import reverse
 from .models import Song
 from random import choice
@@ -29,14 +30,14 @@ class SongPageView(generic.DetailView):
     template_name = "tomikuvzpevnik/viewSong.html"
     context_object_name = "song"
 
-def get_random_song(request):
+def get_random_song(request:HttpRequest):
     pks = Song.objects.values_list("pk", flat=True)
     random_pk = choice(pks)
     return redirect(reverse("tomikuvzpevnik:song_page", args=(random_pk,)))
 
 
 @login_required
-def add_song(request):
+def add_song(request:HttpRequest):
         # if this is a POST request we need to process the form data
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
@@ -60,7 +61,7 @@ def add_song(request):
 
 
 @login_required
-def edit_song(request, pk):
+def edit_song(request:HttpRequest, pk:int):
     if pk == 0:
         song_data = request.session.get('unsaved_song_data', None)
         song = Song(**song_data,owner=request.user) 
@@ -79,3 +80,16 @@ def edit_song(request, pk):
         form = SongEditForm(instance=song)
 
     return render(request, "tomikuvzpevnik/editSong.html", {'form': form, 'song': song})
+
+@login_required
+def delete_song(request:HttpRequest, pk:int):
+    song = get_object_or_404(Song, id=pk)
+    
+    if song.owner != request.user and not request.user.groups.filter(name="Song Admins").exists():
+        print(f"User {request.user.username} attempted to delete a song '{song.name}' without sufficient rights.")
+        return redirect(reverse("tomikuvzpevnik:song_edit", args=(pk,)))  # Redirect if not authorized
+
+    if request.method == 'POST':
+        print(f"Removing song {song.title}...")
+        song.delete()
+        return redirect(reverse("tomikuvzpevnik:index"))

@@ -1,42 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    {% load static %}
-    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/utils.css' %}" />
-    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/editSong.css' %}" />
-    <title>Tomíkův zpěvník</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-  </head>
-  <body>
-    <div style="text-align: center;">
+
+<head>
+  {% load static %}
+  <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/utils.css' %}" />
+  <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/editSong.css' %}" />
+  <title>Tomíkův zpěvník</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<body>
+  <div style="text-align: center;">
     <div class="header">
       <div class="header-left">
-        <a href="{% url 'tomikuvzpevnik:index' %}" id="return" class="button_with_border"><span><img src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}" style="width:50%;height:50%;margin-top:17px;" /></span></a>
+        <a href="{% url 'tomikuvzpevnik:index' %}" id="return" class="button_with_border"><span><img
+              src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}"
+              style="width:50%;height:50%;margin-top:17px;" /></span></a>
       </div>
       <div id="header-right">
         {% if song.pk > 0 %}
-        <a href="{% url 'tomikuvzpevnik:song_delete' song.id %}" class="button_with_border square_medium"><span>Smazat</span></a>
+        <script>
+          function confirmDelete() {
+              return confirm("Určitě chcete ostranit tuto písničku? Tuto akci nelze vzít zpět.");
+          }
+        </script>
+        <form method="post" action="{% url 'tomikuvzpevnik:song_delete' song.id %}" onsubmit="return confirmDelete();">
+          {% csrf_token %}
+          <button class="button_with_border square_medium" type="submit">Smazat</button>
+        </form>
         {% endif %}
       </div>
     </div>
   </div>
-    <h2 style="text-align:center">Tomíkův zpěvník</h2>
-    <h3 style="text-align:center">&#127925; Edituj písničku &#127925;</h3>
-    <form action="" method="post">
-        {% csrf_token %}
-        {% if form.errors %}
-        <div id="err_list">
-        {{ form.errors }}
-        </div>
-        {% endif %}
-      <div class="form">
-        {% for field in form %}
-          <div class="input_field" id="form_{{ field.name }}"{% if field.errors %} style="background-color:#ffaaaa;border-radius:5px;" {% endif %}>
-            {{ field.label_tag }} {{ field }}</div>
-        {% endfor %}
-        <input type="submit" class="button_with_border" value="Edituj!" />
-      </div>
-    </form>
-  </body>
+  <h2 style="text-align:center">Tomíkův zpěvník</h2>
+  <h3 style="text-align:center">&#127925; Edituj písničku &#127925;</h3>
+  <form action="" method="post">
+    {% csrf_token %}
+    {% if form.errors %}
+    <div id="err_list">
+      {{ form.errors }}
+    </div>
+    {% endif %}
+    <div class="form">
+      {% for field in form %}
+      <div class="input_field" id="form_{{ field.name }}" {% if field.errors %}
+        style="background-color:#ffaaaa;border-radius:5px;" {% endif %}>
+        {{ field.label_tag }} {{ field }}</div>
+      {% endfor %}
+      <input type="submit" class="button_with_border" value="Edituj!" />
+    </div>
+  </form>
+</body>
+
 </html>
