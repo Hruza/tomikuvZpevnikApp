@@ -1,0 +1,69 @@
+.form{
+    display: grid;
+    grid-template:
+        "url" 55px 
+        "submit" 55px;
+    height: -moz-calc(100vh - 120px);
+    height: -webkit-calc(100vh - 120px);
+    height: -o-calc(100vh - 120px);
+    height: calc(100vh - 120px);
+}
+
+@media (min-width: 400px) {
+    .form {
+        display: grid;
+        grid-template:
+            "url" 55px 
+            "submit" 55px;
+        height: -moz-calc(100vh - 120px);
+        height: -webkit-calc(100vh - 120px);
+        height: -o-calc(100vh - 120px);
+        height: calc(100vh - 120px);
+        width: calc(min(100%,600px))
+    }
+    form {
+        display: flex;
+        justify-content: space-around;
+    }
+}
+
+.input_field {
+    padding: 5px;
+}
+
+label{
+    color:var(--text2);
+    font:Arial bold;
+}
+
+.input_field input {
+    border-radius: 2px;
+    border: 2px solid var(--accent1);
+    width: -moz-calc(100% - 14px);
+    width: -webkit-calc(100% - 14px);
+    width: -o-calc(100% - 14px);
+    width: calc(100% - 14px);
+    padding: 5px;
+}
+
+
+#err_list{
+    color:#ff2222
+}
+
+#id_song_url {
+    grid-area: url;
+}
+
+#form_lyrics label {
+    display: block;
+}
+
+input.button_with_border{
+    grid-area:submit;
+    border-radius: 2px;
+    width: auto;
+    padding: 5px;
+    margin:5px;
+}
+

@@ -2,6 +2,7 @@ from django.forms import ModelForm
 from django import forms
 from tomikuvzpevnik.models import Song
 from django.core.exceptions import ValidationError
+from urllib.parse import urlparse
 
 def validate_no_html(value):
     if '<' in value or '>' in value:
@@ -10,8 +11,18 @@ def validate_no_html(value):
             code='invalid'
         )
 
+def validate_url(value):
+    if value.strip() == "":
+        return
+    else:
+        parsed_url = urlparse(value)
+        hostname = str(parsed_url.netloc)
+        if not hostname.endswith("ultimate-guitar.com"):
+            raise ValidationError("URL musí být ze stránky 'ultimate-guitar.com'")
+
 class AddSongForm(forms.Form):
-    song_url = forms.URLField(label="Song URL", max_length=200) 
+    song_url = forms.URLField(label='Zadej URL z ultimate-guitar.com', max_length=200, required=False, validators=[validate_url])
+            
 
 class SongEditForm(ModelForm):
     title = forms.CharField(max_length=200,validators=[validate_no_html])

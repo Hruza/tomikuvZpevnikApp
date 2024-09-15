@@ -1,6 +1,7 @@
 import re
 from bs4 import BeautifulSoup
 import requests
+from urllib.parse import urlparse
 import html
 
 VALID_CHORDS = ["C", "C#","D","D#","E","F", "F#","G","G#","A","B","H","Bb"]
@@ -98,11 +99,14 @@ def html_to_base(html_text):
     return "\n\n".join(verses)
 
 def ultimate_to_base(url):
-    #TODO: Add check if the URL is really ultimate guitar
     try:
+        parsed_url = urlparse(url)
+        hostname = str(parsed_url.netloc)
+        if not hostname.endswith("ultimate-guitar.com"):
+            return None 
         response = requests.get(url)
     except requests.exceptions.InvalidURL:
-        return ""
+        return None
     
     song_html = response.text
 
@@ -117,9 +121,10 @@ def ultimate_to_base(url):
     titleE = song_html[titleI+byArtI+8:].find('"')
     title = song_html[titleI+byArtI:8+titleI+byArtI+titleE].replace('"name":"','')
 
-    firstWord = '<div class="js-store"'
+    firstWord = '{&quot;content&quot;:&quot;'
     lastWord = '&quot;,&quot;revision_id&quot'
-    song_html = song_html[song_html.find(firstWord)+1:]
+    song_html = song_html[song_html.find(firstWord)+len(firstWord)+1:]
+    song_html = song_html[:10000]
     song_html = song_html[:song_html.find(lastWord)]
     song_html = song_html.replace("\\r\\n","\n")
 
@@ -146,11 +151,13 @@ def ultimate_to_base(url):
 
             line_segments = []
             start_index = 0
+            prior_offset = 0
             for space,chord in chords:
-                space = space + 1
+                space = space + prior_offset
                 line_segments.append(line[start_index:start_index+space])
                 start_index += space
                 line_segments.append(f"[{chord}]") 
+                prior_offset = len(chord)
             if start_index < len(line):
                 line_segments.append(line[start_index:])   
             line = "".join(line_segments)

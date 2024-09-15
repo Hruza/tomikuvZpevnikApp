@@ -44,6 +44,9 @@ def add_song(request):
 
         if form.is_valid():
             # check whether it's valid:
+            if form.cleaned_data['song_url'].strip() == "":
+                request.session['unsaved_song_data'] = {}
+                return redirect(reverse("tomikuvzpevnik:song_edit", args=(0,)))
             song_data = ultimate_to_base(form.cleaned_data['song_url'])
             if not song_data is None:
                 request.session['unsaved_song_data'] = song_data
@@ -70,8 +73,8 @@ def edit_song(request, pk):
     if request.method == 'POST':
         form = SongEditForm(request.POST, instance=song)
         if form.is_valid():
-            form.save()
-            return redirect(reverse("tomikuvzpevnik:song_page", args=(pk,)))
+            new_song = form.save()
+            return redirect(reverse("tomikuvzpevnik:song_page", args=(new_song.pk,)))
     else:
         form = SongEditForm(instance=song)
 
