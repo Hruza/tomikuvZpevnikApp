@@ -15,7 +15,7 @@ VERSE_START = '<p class="{0}">'
 VERSE_END = '</p>'
 HIGHLIGHT_HTML = '<i>{0}</i>'
 CHORD_SYMBOL = "*"
-NOT_CHORD = ["bridge","intro","outro"]
+NOT_CHORD = ["bridge","intro","outro","ending"]
 
 def split_chord(chord:str,use_h = True):
     chord = chord.strip()
@@ -141,7 +141,7 @@ def ultimate_to_base(url):
                 output_text.append("")
             if not line[:5] in ['Bridg','Verse','Choru','Pre-C']:
                 # using sart because verse can be numbered
-                output_text.append("{" + line + "}")
+                output_text.append("[" + line + "]")
             elif line == 'Chorus':
                 output_text.append("*")
         elif line.startswith("[tab]"):

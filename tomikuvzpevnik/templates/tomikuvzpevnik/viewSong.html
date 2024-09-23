@@ -17,10 +17,10 @@
           <a href="{% url 'tomikuvzpevnik:index' %}" id="return" class="button_with_border"><span><img src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}" style="width:50%;height:50%;margin-top:17px;" /></span></a>
         </div>
         <div class="header-right">
-          <a href="{% url 'tomikuvzpevnik:song_random' %}" class="button_with_border square_medium">Random</a>
-          <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="button_with_border square_medium"><span>Upravit</span></a>
+          <a href="{% url 'tomikuvzpevnik:song_random' %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:95%"></a>
+          <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/edit_song.svg' %}" style="width:90%"></a>
           <div class="transposition" style="justify-self: end;">
-            <div style="grid-area: t_label;">Transpose</div>
+            <div style="grid-area: t_label;"><img src=" {% static 'tomikuvzpevnik/icons/transpose.svg' %}" style="width:100%;top:10px;"></div>
             <div style="grid-area: down;text-align: right;">
               <button onclick="transpose(-1)" class="button_no_border trans_button">-</button>
             </div>
@@ -29,9 +29,7 @@
               <button onclick="transpose(+1)" class="button_no_border trans_button">+</button>
             </div>
           </div>
-          <div>
-            <button onclick="scrollpage()" class="button_with_border square_medium">Scroll<br />down</button>
-          </div>
+          <button onclick="scrollpage()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/scroll_down.svg' %}" style="width:110%"></button>
         </div>
       </div>
 
