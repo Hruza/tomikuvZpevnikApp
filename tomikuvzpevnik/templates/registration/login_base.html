@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/utils.css' %}">
+    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/accounts.css' %}">
+    <title>Tomíkův zpěvník</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="{% url 'tomikuvzpevnik:index' %}" id="return" class="button_with_border">
+                <span>
+                    <img src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}"
+                        style="width:50%;height:50%;margin-top:17px;" />
+                </span>
+            </a>
+        </div>
+        <div class="header-right">
+        </div>
+    </div>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+
+</html>
