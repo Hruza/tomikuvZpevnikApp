@@ -93,3 +93,21 @@ def delete_song(request:HttpRequest, pk:int):
         print(f"Removing song {song.title}...")
         song.delete()
         return redirect(reverse("tomikuvzpevnik:index"))
+
+
+from django.contrib.auth.forms import UserCreationForm 
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False) 
+            user.is_active = False
+            user.save()
+            #send_verification_email(request, user)
+            #messages.success(request, _('Please check your email to verify your account.'))
+            return redirect('login') 
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'registration/create_account.html', {'form': form})

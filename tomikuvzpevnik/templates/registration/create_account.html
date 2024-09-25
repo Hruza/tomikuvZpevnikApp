@@ -4,9 +4,6 @@
 <form method="post">
   {% csrf_token %}
   {{ form }}
-  <button type="submit">Log In</button>
-  <div>
-    Nemáš účet? <a href="{% url 'sign_up' %}">Registruj se zde.</a>
-  </div>
+  <button type="submit">Sign Up</button>
 </form>
 {% endblock %}

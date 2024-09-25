@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include,path
+from tomikuvzpevnik.views import register
 #from django.contrib.auth import views as auth_views
 
 app_name = "tomikuvzpevnik"
@@ -23,4 +24,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("tomikuvzpevnik.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
+    path("accounts/create_account", register, name="sign_up"),
 ]
