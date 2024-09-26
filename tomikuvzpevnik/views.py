@@ -30,6 +30,14 @@ class SongPageView(generic.DetailView):
     template_name = "tomikuvzpevnik/viewSong.html"
     context_object_name = "song"
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        print(self.request.user)
+        context['editable'] = self.get_object().isEditable(self.request.user)
+        return context
+
+
+
 def get_random_song(request:HttpRequest):
     pks = Song.objects.values_list("pk", flat=True)
     random_pk = choice(pks)
@@ -68,7 +76,7 @@ def edit_song(request:HttpRequest, pk:int):
     else:
         song = get_object_or_404(Song, id=pk)
     
-    if song.owner != request.user and not request.user.groups.filter(name="Song Admins").exists():
+    if not song.isEditable(request.user):
         return redirect(reverse("tomikuvzpevnik:song_page", args=(pk,)))  # Redirect if not authorized
 
     if request.method == 'POST':

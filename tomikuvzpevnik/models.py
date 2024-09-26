@@ -15,3 +15,6 @@ class Song(models.Model):
     
     def get_html_text(self):
         return base_to_html(strip_tags(self.lyrics))
+    
+    def isEditable(self,user:User):
+        return user == self.owner or user.groups.filter(name="Song Admins").exists()
