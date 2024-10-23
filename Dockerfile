@@ -12,4 +12,3 @@ RUN apt-get update && \
 
 ENV LANG=cs_CZ.UTF-8
 ENV LC_NUMERIC=cs_CZ.UTF-8
-#COPY . .

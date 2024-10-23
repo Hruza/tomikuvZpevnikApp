@@ -3,7 +3,6 @@ services:
   tomikuvzpevnik:
     build: .
     volumes:
-      - .:/tomikuvzpevnik
       - sqlite_data:/tomikuvzpevnik/sqlite_data
       - /var/www/static/:/var/www/static/
       - /var/certbot/conf:/etc/letsencrypt/:ro
