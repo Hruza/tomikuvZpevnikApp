@@ -46,6 +46,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .button_with_border:hover {
@@ -62,6 +63,7 @@ body {
     display:flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .button_no_border:hover {
