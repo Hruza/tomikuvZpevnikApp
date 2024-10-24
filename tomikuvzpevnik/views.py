@@ -2,9 +2,9 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import generic
-from django.http import HttpRequest
+from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
-from .models import Song
+from .models import Song, SongData
 from random import choice
 from tomikuvzpevnik.forms import SongEditForm
 from tomikuvzpevnik.song_utils.conversions import ultimate_to_base
@@ -37,7 +37,6 @@ class SongPageView(generic.DetailView):
         return context
 
 
-
 def get_random_song(request:HttpRequest):
     pks = Song.objects.values_list("pk", flat=True)
     random_pk = choice(pks)
@@ -46,7 +45,7 @@ def get_random_song(request:HttpRequest):
 
 @login_required
 def add_song(request:HttpRequest):
-        # if this is a POST request we need to process the form data
+    # if this is a POST request we need to process the form data
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
         form = AddSongForm(request.POST)
@@ -66,6 +65,31 @@ def add_song(request:HttpRequest):
         form = AddSongForm()
 
     return render(request, "tomikuvzpevnik/addSong.html", {"form": form})
+
+
+@login_required
+def update_song_data(request: HttpRequest, pk: int):
+    if request.method == "POST" and request.is_ajax():
+        song = get_object_or_404(Song, id=pk)
+        song_data, _ = SongData.objects.get_or_create(user=request.user, song=song)
+
+        # Parse AJAX request values
+        # rating_value = request.POST.get("rating")
+        favorite_value = request.POST.get("favorite", "false") == "true"
+
+        # song_data.rating = int(rating_value)
+        song_data.favorite = favorite_value
+        song_data.save()
+
+        song_data_dict = {
+            f.name: str(song_data.__getattribute__(f.name))
+            for f in song_data._meta.get_fields()
+        }
+
+        # Return JSON response with current song_data values
+        return JsonResponse({"success": True} | song_data_dict)
+
+    return JsonResponse({"success": False}, status=400)
 
 
 @login_required
