@@ -13,15 +13,20 @@
 
 body {
     background-color: var(--background0);
-    color: var(--text1)
+    color: var(--text1);
+    margin:0;
 }
 
-.header{
+.header {
     overflow: hidden;
     display: flex;
     justify-content: space-between;
     overflow-x: overlay;
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 10px 10px 5px 10px;
+    background-color: var(--background0);
 }
 
 .header .header-left{

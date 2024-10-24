@@ -108,7 +108,12 @@
     text-align: center;
     margin-left: min(60px, 5%);
     margin-right: min(60px, 5%);
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    position: sticky;
+    top: 80px;
+    background-color: var(--background0);
+    z-index: 15;
 }
 
 #searchInput {
