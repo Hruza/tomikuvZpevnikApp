@@ -8,7 +8,7 @@
     <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/utils.css' %}" />
     <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/songView.css' %}" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src=" {% static 'tomikuvzpevnik/transpose.js' %}"></script>
+    <script src=" {% static 'tomikuvzpevnik/songControls.js' %}"></script>
   </head>
   <body>
     <div class="song">
@@ -17,21 +17,27 @@
           <a href="{% url 'tomikuvzpevnik:index' %}" id="return" class="button_no_border"><span><img src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}" style="width:50%;height:50%;margin-top:17px;" /></span></a>
         </div>
         <div class="header-right">
-          <a href="{% url 'tomikuvzpevnik:song_random' %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:95%"></a>
-          {% if editable %}
-          <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/edit_song.svg' %}" style="width:90%"></a>
-          {% endif %}
-          <div class="transposition" style="justify-self: end;">
-            <div style="grid-area: t_label;"><img src=" {% static 'tomikuvzpevnik/icons/transpose.svg' %}" style="width:100%;top:10px;"></div>
-            <div style="grid-area: down;text-align: right;">
-              <button onclick="transpose(-1)" class="button_no_border trans_button">-</button>
-            </div>
-            <div class="trans" id="trans" style="text-align:center;grid-area: number;">0</div>
-            <div style="grid-area: up;text-align: left;">
-              <button onclick="transpose(+1)" class="button_no_border trans_button">+</button>
+          <a href="{% url 'tomikuvzpevnik:song_random' %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:95%" /></a>
+          <button onclick="scrollpage()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/scroll_down.svg' %}" style="width:110%" /></button>
+          <button onclick="triggerDropdown()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/menu.svg' %}" style="width:110%" /></button>
+          <div class="dropdown-menu" id="dropdown">
+            {% if editable %}
+              <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/edit_song.svg' %}" style="width:90%" /></a>
+            {% endif %}
+            <div class="transposition" style="justify-self: end;">
+              <div style="grid-area: t_label;">
+                <img src=" {% static 'tomikuvzpevnik/icons/transpose.svg' %}" style="width:100%;top:10px;" />
+              </div>
+              <div style="grid-area: down;text-align: right;">
+                <button onclick="transpose(-1)" class="button_no_border trans_button">-</button>
+              </div>
+              <div class="trans" id="trans" style="text-align:center;grid-area: number;">0</div>
+              <div style="grid-area: up;text-align: left;">
+                <button onclick="transpose(+1)" class="button_no_border trans_button">+</button>
+              </div>
             </div>
           </div>
-          <button onclick="scrollpage()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/scroll_down.svg' %}" style="width:110%"></button>
+          <div class="dropdown-menu"></div>
         </div>
       </div>
 

@@ -136,3 +136,36 @@
 .song_container:not(:has(> :nth-child(3))) {
     column-count: 1;
 }
+.header-right {
+    z-index: 20;
+}
+
+
+.dropdown-menu {
+    position: fixed;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    gap: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    overflow: hidden;
+    width: 240px;
+    height: 75px;
+    box-shadow: 0px 0px 0px #999999;
+    background-color: var(--background0);
+    top: 0;
+    right: 0;
+    z-index: -10;
+    transition: 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+.dropdown-menu-open {
+    height: 300px;
+    box-shadow: 1px 1px 10px #999999;
+    transition: 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
+    padding-top: 90px;
+    padding-bottom: 30px;
+}
