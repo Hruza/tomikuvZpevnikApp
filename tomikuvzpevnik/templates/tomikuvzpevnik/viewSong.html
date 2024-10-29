@@ -19,6 +19,17 @@
         <div class="header-right">
           <a href="{% url 'tomikuvzpevnik:song_random' %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:95%" /></a>
           <button onclick="scrollpage()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/scroll_down.svg' %}" style="width:110%" /></button>
+          {% if user.is_authenticated %}
+            <button onclick="updateFavorite()" class="button_no_border square_medium">
+              {% if song_data.favorite %}
+              <img src=" {% static 'tomikuvzpevnik/icons/favorite_full.svg' %}" style="width:110%" />
+              {% else %}
+              <img src=" {% static 'tomikuvzpevnik/icons/favorite.svg' %}" style="width:110%" />
+              {% endif %}
+            </button>
+          {% else %}
+            <a href="{% url 'login' %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/favorite.svg' %}" style="width:95%" /></a>
+          {% endif %}
           <button onclick="triggerDropdown()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/menu.svg' %}" style="width:110%" /></button>
           <div class="dropdown-menu" id="dropdown">
             <div class="dropdown-content">

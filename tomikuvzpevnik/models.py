@@ -23,6 +23,9 @@ class Song(models.Model):
     def isEditable(self, user: User):
         return user == self.owner or user.groups.filter(name="Song Admins").exists()
 
+    def isFavorite(self, user: User):
+        return user == self.owner or user.groups.filter(name="Song Admins").exists()
+
 
 def validate_capo(value):
     if value % 2 != 0:

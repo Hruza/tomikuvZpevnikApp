@@ -33,7 +33,15 @@ class SongPageView(generic.DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         print(self.request.user)
-        context['editable'] = self.get_object().isEditable(self.request.user)
+        song = self.get_object()
+        user = self.request.user
+        context["editable"] = song.isEditable(user)
+
+        song_data = None
+        if user.is_authenticated:
+            song_data = SongData.objects.filter(user=user, song=song).first()
+        print(song_data.favorite)
+        context["song_data"] = song_data
         return context
 
 
