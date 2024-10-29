@@ -21,26 +21,29 @@
           <button onclick="scrollpage()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/scroll_down.svg' %}" style="width:110%" /></button>
           <button onclick="triggerDropdown()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/menu.svg' %}" style="width:110%" /></button>
           <div class="dropdown-menu" id="dropdown">
-            {% if editable %}
-              <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/edit_song.svg' %}" style="width:90%" /></a>
-            {% endif %}
-            <div class="transposition" style="justify-self: end;">
-              <div style="grid-area: t_label;">
-                <img src=" {% static 'tomikuvzpevnik/icons/transpose.svg' %}" style="width:100%;top:10px;" />
-              </div>
-              <div style="grid-area: down;text-align: right;">
-                <button onclick="transpose(-1)" class="button_no_border trans_button">-</button>
-              </div>
-              <div class="trans" id="trans" style="text-align:center;grid-area: number;">0</div>
-              <div style="grid-area: up;text-align: left;">
-                <button onclick="transpose(+1)" class="button_no_border trans_button">+</button>
-              </div>
+            <div class="dropdown-content">
+              {% if editable %}
+                <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/edit_song.svg' %}" style="width:90%" /></a>
+              {% endif %}
+              <div class="transposition" style="justify-self: end;">
+                <div style="grid-area: t_label;">
+                  <img src=" {% static 'tomikuvzpevnik/icons/transpose.svg' %}" style="width:100%;top:10px;" />
+                </div>
+                <div style="grid-area: down;text-align: right;">
+                  <button onclick="transpose(-1)" class="button_no_border trans_button">-</button>
+                </div>
+                <div class="trans" id="trans" style="text-align:center;grid-area: number;">0</div>
+                <div style="grid-area: up;text-align: left;">
+                  <button onclick="transpose(+1)" class="button_no_border trans_button">+</button>
+                </div>
+              </div>  
             </div>
           </div>
           <div class="dropdown-menu"></div>
         </div>
       </div>
-
+      
+      <div id="hide"></div>
       <h1 id="song_name">{{ song.title }}</h1>
       <h3 id="author">{{ song.artist }}</h3>
 

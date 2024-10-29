@@ -59,8 +59,6 @@ function calibrateChords() {
   }
 }
 
-window.onload = calibrateChords;
-
 function scrollpage() {
   window.scrollBy(0, 1);
   if ((window.innerHeight + window.scrollY) + 1 <= document.body.offsetHeight) { //scrolling stops at the bottom
@@ -68,7 +66,15 @@ function scrollpage() {
   }
 }
 
-
 function triggerDropdown() {
   document.getElementById("dropdown").classList.toggle("dropdown-menu-open");
+  document.getElementById("hide").classList.toggle("active");
+}
+
+
+window.onload = () => {
+  calibrateChords();
+  document.getElementById("hide").addEventListener("click", function (event) {
+    triggerDropdown();
+  })
 }

@@ -136,21 +136,17 @@
 .song_container:not(:has(> :nth-child(3))) {
     column-count: 1;
 }
+
 .header-right {
     z-index: 20;
 }
 
-
 .dropdown-menu {
     position: fixed;
-    display: flex;
     box-sizing: border-box;
-    flex-direction: column;
-    gap: 30px;
     padding-left: 30px;
     padding-right: 30px;
-    padding-top: 0px;
-    padding-bottom: 0px;
+    padding-bottom: 30px;
     overflow: hidden;
     width: 240px;
     height: 75px;
@@ -158,14 +154,45 @@
     background-color: var(--background0);
     top: 0;
     right: 0;
-    z-index: -10;
+    z-index: -1;
     transition: 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
 
-.dropdown-menu-open {
-    height: 300px;
-    box-shadow: 1px 1px 10px #999999;
+.dropdown-menu .dropdown-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+    top: 0px;
     transition: 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
-    padding-top: 90px;
-    padding-bottom: 30px;
+}
+.dropdown-menu-open {
+    height: 250px;
+    box-shadow: 1px 1px 10px #999999;
+}
+
+.dropdown-menu-open .dropdown-content {
+    top: 90px;
+}
+
+.active {
+    display: block;
+}
+
+#hide {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: none;
+    z-index: 9;
+    background-color: #00000000;
+    padding: 0;
+    margin: 0;
+    top: 0;
+    left: 0;
+}
+
+#hide.active {
+    display: block;
 }
