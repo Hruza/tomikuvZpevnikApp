@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.utils.decorators import method_decorator
 from django.views import generic
 from django.http import HttpRequest, JsonResponse
@@ -32,7 +33,6 @@ class SongPageView(generic.DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        print(self.request.user)
         song = self.get_object()
         user = self.request.user
         context["editable"] = song.isEditable(user)
@@ -40,7 +40,7 @@ class SongPageView(generic.DetailView):
         song_data = None
         if user.is_authenticated:
             song_data = SongData.objects.filter(user=user, song=song).first()
-        print(song_data.favorite)
+
         context["song_data"] = song_data
         return context
 
@@ -77,18 +77,23 @@ def add_song(request:HttpRequest):
 
 @login_required
 def update_song_data(request: HttpRequest, pk: int):
-    if request.method == "POST" and request.is_ajax():
+    if (
+        request.method == "POST"
+        and request.headers.get("x-requested-with") == "XMLHttpRequest"  # is AJAX
+    ):
         song = get_object_or_404(Song, id=pk)
         song_data, _ = SongData.objects.get_or_create(user=request.user, song=song)
 
         # Parse AJAX request values
-        # rating_value = request.POST.get("rating")
-        favorite_value = request.POST.get("favorite", "false") == "true"
+        if not "favorite" in request.POST.keys():
+            return JsonResponse({"success": False}, status=400)
+
+        favorite_value = request.POST.get("favorite") == "true"
 
         # song_data.rating = int(rating_value)
         song_data.favorite = favorite_value
         song_data.save()
-
+        print(song_data.favorite)
         song_data_dict = {
             f.name: str(song_data.__getattribute__(f.name))
             for f in song_data._meta.get_fields()
@@ -124,7 +129,7 @@ def edit_song(request:HttpRequest, pk:int):
 @login_required
 def delete_song(request:HttpRequest, pk:int):
     song = get_object_or_404(Song, id=pk)
-    
+
     if song.owner != request.user and not request.user.groups.filter(name="Song Admins").exists():
         print(f"User {request.user.username} attempted to delete a song '{song.name}' without sufficient rights.")
         return redirect(reverse("tomikuvzpevnik:song_edit", args=(pk,)))  # Redirect if not authorized
@@ -135,17 +140,15 @@ def delete_song(request:HttpRequest, pk:int):
         return redirect(reverse("tomikuvzpevnik:index"))
 
 
-from django.contrib.auth.forms import UserCreationForm 
-
-def register(request):
+def register(request: HttpRequest):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False) 
             user.is_active = False
             user.save()
-            #send_verification_email(request, user)
-            #messages.success(request, _('Please check your email to verify your account.'))
+            # send_verification_email(request, user)
+            # messages.success(request, _('Please check your email to verify your account.'))
             return redirect('login') 
     else:
         form = UserCreationForm()

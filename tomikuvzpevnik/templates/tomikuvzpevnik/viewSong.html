@@ -20,12 +20,10 @@
           <a href="{% url 'tomikuvzpevnik:song_random' %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:95%" /></a>
           <button onclick="scrollpage()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/scroll_down.svg' %}" style="width:110%" /></button>
           {% if user.is_authenticated %}
-            <button onclick="updateFavorite()" class="button_no_border square_medium">
-              {% if song_data.favorite %}
-              <img src=" {% static 'tomikuvzpevnik/icons/favorite_full.svg' %}" style="width:110%" />
-              {% else %}
-              <img src=" {% static 'tomikuvzpevnik/icons/favorite.svg' %}" style="width:110%" />
-              {% endif %}
+            <button id="favorite_button" class="button_no_border square_medium">
+              <svg width="250" height="250" viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path id="favorite_star" style="transition: 0.2s;" d="M120.77 25.623C122.09 22.2171 126.91 22.2171 128.23 25.623L150.991 84.3503C151.559 85.8146 152.93 86.8114 154.498 86.8986L217.385 90.3982C221.032 90.6012 222.521 95.1845 219.69 97.4925L170.871 137.288C169.654 138.28 169.129 139.893 169.531 141.411L185.636 202.301C186.57 205.832 182.671 208.665 179.601 206.685L126.668 172.553C125.348 171.702 123.652 171.702 122.332 172.553L69.3989 206.685C66.329 208.665 62.4302 205.832 63.3642 202.301L79.4689 141.411C79.8705 139.893 79.3465 138.28 78.1292 137.288L29.3099 97.4925C26.4786 95.1845 27.9678 90.6012 31.615 90.3982L94.5016 86.8986C96.0696 86.8114 97.4415 85.8146 98.009 84.3503L120.77 25.623Z" stroke="black" stroke-width="15"/>
+              </svg>
             </button>
           {% else %}
             <a href="{% url 'login' %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/favorite.svg' %}" style="width:95%" /></a>
@@ -67,5 +65,58 @@
         </div>
       </div>
     </div>
+    {% if user.is_authenticated %}
+      <script>
+        var favorite_button = document.getElementById('favorite_button');
+        var favorite_path = document.getElementById('favorite_star');
+        
+        function updateStar(isFull){
+          if(isFull){
+            favorite_path.setAttribute('stroke',"#0A94BF");
+            favorite_path.setAttribute('fill',"#0A94BF");
+          }
+          else{
+            favorite_path.setAttribute('stroke',"black"); 
+            favorite_path.setAttribute('fill',"");
+          }
+        }
+        
+        {% if song_data.favorite %}
+        var isFavorite = true;
+        {% else %}
+        var isFavorite = false;
+        {% endif %}
+
+        updateStar(isFavorite);
+
+        favorite_button.addEventListener('click', function(event) {
+          const formData = new FormData();
+          formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+          isFavorite = !isFavorite;
+          formData.append('favorite', isFavorite);
+          updateStar(isFavorite);
+
+          fetch("{% url 'tomikuvzpevnik:song_update' song.id %}", {
+              method: 'POST',
+              body: formData,
+              headers: {
+                  'X-Requested-With': 'XMLHttpRequest',
+              },
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                isFavorite = data.favorite.toLowerCase() == "true";
+                updateStar(isFavorite);
+              } else {
+                  alert('Failed to submit rating');
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+          });
+        });
+      </script>
+    {% endif %}
   </body>
 </html>
