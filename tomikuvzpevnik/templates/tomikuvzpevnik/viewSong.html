@@ -31,6 +31,14 @@
           <button onclick="triggerDropdown()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/menu.svg' %}" style="width:110%" /></button>
           <div class="dropdown-menu" id="dropdown">
             <div class="dropdown-content">
+              <div id="random_selection">
+                <img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:20px" />
+                <select id="random_type">
+                  <option value="0">Všechny</option>
+                  <option value="1">Spíše oblíbené</option>
+                  <option value="2">Pouze oblíbené</option>
+                </select>
+              </div>
               {% if editable %}
                 <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/edit_song.svg' %}" style="width:90%" /></a>
               {% endif %}

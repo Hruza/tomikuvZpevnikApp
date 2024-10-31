@@ -2,7 +2,7 @@
     text-align: center;
     display: flex;
     justify-content: flex-end;
-    column-gap:10px;
+    column-gap: 10px;
 }
 
 .trans_control {
@@ -11,32 +11,33 @@
     text-overflow: clip;
 }
 
-.transposition{
+.transposition {
     grid-template-columns: 30px 20px 30px;
     grid-template-rows: 20px auto;
-    grid-template-areas: "t_label t_label t_label"
-                    "down number up";
-    height:60px;
-    display:grid;
+    grid-template-areas:
+        "t_label t_label t_label"
+        "down number up";
+    height: 60px;
+    display: grid;
     align-content: space-evenly;
     align-items: center;
     text-align: center;
 }
 
-.trans_button{
-    font-size:20px;
+.trans_button {
+    font-size: 20px;
     font-weight: bold;
-    padding:2px 8px;
-    width:30px;
+    padding: 2px 8px;
+    width: 30px;
 }
 
-.trans{
+.trans {
     font-family: Arial, Helvetica, sans-serif;
 }
 
 .header,
-.header-right{
-    gap:10px;
+.header-right {
+    gap: 10px;
 }
 
 /* chords */
@@ -70,7 +71,8 @@
 
 .chorus {
     border-left: 3px solid var(--text1);
-} 
+}
+
 .chorus::first-line {
     border-left: none;
 }
@@ -108,7 +110,6 @@
 }
 
 @media (min-width: 1600px) {
-
     .song_container {
         column-count: 3;
     }
@@ -116,7 +117,6 @@
     .song_container:not(:has(> :nth-child(7))) {
         column-count: 2;
     }
-
 }
 
 @media (max-width: 1600px) {
@@ -144,12 +144,12 @@
 .dropdown-menu {
     position: fixed;
     box-sizing: border-box;
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
     padding-bottom: 30px;
     overflow: hidden;
-    width: 310px;
-    height: 75px;
+    width: 270px;
+    height: 70px;
     box-shadow: 0px 0px 0px #999999;
     background-color: var(--background0);
     top: 0;
@@ -161,19 +161,20 @@
 .dropdown-menu .dropdown-content {
     position: relative;
     display: flex;
-    flex-direction: column;
-    gap: 30px;
+    flex-direction: row;
+    justify-content: space-between;
     width: 100%;
     top: 0px;
     transition: 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
+
 .dropdown-menu-open {
-    height: 250px;
+    height: 150px;
     box-shadow: 1px 1px 10px #999999;
 }
 
 .dropdown-menu-open .dropdown-content {
-    top: 90px;
+    top: 80px;
 }
 
 .active {
@@ -195,4 +196,27 @@
 
 #hide.active {
     display: block;
+}
+
+#random_type {
+    width: 80px;
+    text-wrap: wrap;
+    height: 40px;
+    text-align: center;
+    border-radius: 4px;
+    border: 2px solid var(--text1);
+}
+
+#random_selection {
+    width: 80px;
+    display: flex;
+    padding-top: 6px;
+    margin-left: 5px;
+}
+
+#random_selection img {
+    position: absolute;
+    top: 0px;
+    left: -3px;
+    background: #ffffff;
 }

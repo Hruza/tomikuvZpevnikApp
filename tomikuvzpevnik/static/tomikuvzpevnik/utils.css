@@ -86,8 +86,8 @@ a{
 }
 
 .square_medium{
-    width:60px;
-    height:60px;
+    width: 55px;
+        height: 55px;
     display:flex;
 }
 
@@ -100,7 +100,7 @@ a{
     text-align: center;
     font-size: 30px;
     width: 80px;
-    height: 58px;
+    height: 55px;
     transition: all 0.5s;
     cursor: pointer;
     position: relative;
