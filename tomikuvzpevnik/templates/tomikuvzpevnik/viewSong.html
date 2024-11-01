@@ -17,7 +17,13 @@
           <a href="{% url 'tomikuvzpevnik:index' %}" id="return" class="button_no_border"><span><img src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}" style="width:50%;height:50%;margin-top:17px;" /></span></a>
         </div>
         <div class="header-right">
-          <a href="{% url 'tomikuvzpevnik:song_random' %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:95%" /></a>
+          {% if user.is_authenticated %}
+          <a id="random_song" href="{% url 'tomikuvzpevnik:song_random' %}?rng_mode={{ rng_mode }}" class="button_no_border square_medium">
+            {% else %}
+            <a id="random_song" href="{% url 'tomikuvzpevnik:song_random' %}" class="button_no_border square_medium">
+          {% endif %}
+            <img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:95%" />
+          </a>
           <button onclick="scrollpage()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/scroll_down.svg' %}" style="width:110%" /></button>
           {% if user.is_authenticated %}
             <button id="favorite_button" class="button_no_border square_medium">
@@ -31,14 +37,23 @@
           <button onclick="triggerDropdown()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/menu.svg' %}" style="width:110%" /></button>
           <div class="dropdown-menu" id="dropdown">
             <div class="dropdown-content">
+              {% if user.is_authenticated %}
               <div id="random_selection">
-                <img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:20px" />
-                <select id="random_type">
+                <img src="{% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:20px" />
+                <select id="random_mode" selected="{{ rng_mode }}" onchange="UpdateRng()">
                   <option value="0">Všechny</option>
                   <option value="1">Spíše oblíbené</option>
                   <option value="2">Pouze oblíbené</option>
                 </select>
+                <script>
+                  randomSongButton = document.getElementById("random_song")
+                  rngSelection = document.getElementById("random_mode")
+                  function UpdateRng(){
+                    randomSongButton.href = `{% url 'tomikuvzpevnik:song_random' %}?rng_mode=${rngSelection.value}`
+                  }
+                </script>
               </div>
+              {% endif %}
               {% if editable %}
                 <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/edit_song.svg' %}" style="width:90%" /></a>
               {% endif %}

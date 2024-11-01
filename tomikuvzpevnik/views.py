@@ -5,8 +5,8 @@ from django.utils.decorators import method_decorator
 from django.views import generic
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
-from .models import Song, SongData
-from random import choice
+from .models import Song, SongData, UserPreferences
+from random import choice, choices
 from tomikuvzpevnik.forms import SongEditForm
 from tomikuvzpevnik.song_utils.conversions import ultimate_to_base
 import locale
@@ -42,13 +42,34 @@ class SongPageView(generic.DetailView):
             song_data = SongData.objects.filter(user=user, song=song).first()
 
         context["song_data"] = song_data
+        rng_mode = self.request.GET.get("rng_mode", "0")
+        if not rng_mode in {"0", "1", "2"}:
+            rng_mode = "0"
+        context["rng_mode"] = rng_mode
         return context
 
 
 def get_random_song(request:HttpRequest):
-    pks = Song.objects.values_list("pk", flat=True)
-    random_pk = choice(pks)
-    return redirect(reverse("tomikuvzpevnik:song_page", args=(random_pk,)))
+    rng_mode = request.GET.get("rng_mode", "0")
+    random_pk = None
+    if request.user.is_authenticated and rng_mode == "1":
+        FAVORITE_WEIGHTING = 10
+        favorites = SongData.objects.filter(user=request.user, favorite=True)
+        pks = Song.objects.values_list("pk", flat=True)
+        if len(favorites) > 0:
+            favorite_keys = {sd.song.pk for sd in favorites}
+            weights = [FAVORITE_WEIGHTING if pk in favorite_keys else 1 for pk in pks]
+            random_pk = choices(pks, weights)[0]
+    elif request.user.is_authenticated and rng_mode == "2":
+        favorites = SongData.objects.filter(user=request.user, favorite=True)
+        if len(favorites) > 0:
+            random_pk = choice(favorites).song.pk
+
+    if random_pk is None:
+        pks = Song.objects.values_list("pk", flat=True)
+        random_pk = choice(pks)
+    query = f"?rng_mode={rng_mode}" if rng_mode in {"1", "2"} else ""
+    return redirect(reverse("tomikuvzpevnik:song_page", args=(random_pk,)) + query)
 
 
 @login_required
