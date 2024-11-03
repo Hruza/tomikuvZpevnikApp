@@ -9,6 +9,7 @@ from .models import Song, SongData, UserPreferences
 from random import choice, choices
 from tomikuvzpevnik.forms import SongEditForm
 from tomikuvzpevnik.song_utils.conversions import ultimate_to_base
+from django.db.models import BooleanField, ExpressionWrapper, Q, Subquery, OuterRef
 import locale
 from .forms import AddSongForm
 
@@ -19,12 +20,24 @@ class IndexView(generic.ListView):
     context_object_name = "song_list"
 
     def get_queryset(self):
-        # Fetch all songs from the database
-        songs = Song.objects.all()
         # Set the locale to use for sorting (e.g., 'en_US.UTF-8')
         locale.setlocale(locale.LC_ALL, 'cs_CZ.UTF-8')
+
+        if self.request.user.is_authenticated:
+            favorite_subquery = SongData.objects.filter(
+                user=self.request.user, song=OuterRef("pk"), favorite=True
+            ).values("favorite")[:1]
+
+            # Add the information about being favorite
+            songs = Song.objects.annotate(
+                favorite=Subquery(favorite_subquery, output_field=BooleanField())
+            )
+        else:
+            # Fetch all songs from the database
+            songs = Song.objects.all()
         # Sort songs using locale-aware sorting
         return sorted(songs, key=lambda song: locale.strxfrm(song.title))
+
 
 class SongPageView(generic.DetailView):
     model = Song

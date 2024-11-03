@@ -69,7 +69,11 @@
                     <div class="song_item" owner="{{ song.owner }}">
                         <a href="{% url 'tomikuvzpevnik:song_page' song.id %}">
                             <div class="song_ref">
-                                <span class="song_name">{{ song.title }}</span>
+                                <span class="song_name">{{ song.title }}
+                                    {% if user.is_authenticated and song.favorite  %}
+                                    &nbsp;&nbsp;<img src="{% static 'tomikuvzpevnik/icons/favorite_full.svg' %}" style="width:1em;position:absolute;height: 1em;transform:translate(-0.6em, 1px);">
+                                    {% endif %}
+                                </span>
                                 <span class="song_author">{{ song.artist }}</span>
                                 <span class="owner">{{ song.owner }}</span>
                             </div>
