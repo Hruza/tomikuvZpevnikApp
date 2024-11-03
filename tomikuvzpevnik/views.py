@@ -29,12 +29,20 @@ class IndexView(generic.ListView):
             ).values("favorite")[:1]
 
             # Add the information about being favorite
-            songs = Song.objects.annotate(
-                favorite=Subquery(favorite_subquery, output_field=BooleanField())
+            songs = (
+                Song.objects.select_related("owner")
+                .only("title", "artist", "owner__username")
+                .annotate(
+                    favorite=Subquery(favorite_subquery, output_field=BooleanField())
+                )
             )
         else:
             # Fetch all songs from the database
-            songs = Song.objects.all()
+            songs = (
+                Song.objects.select_related("owner")
+                .only("title", "artist", "owner__username")
+                .all()
+            )
         # Sort songs using locale-aware sorting
         return sorted(songs, key=lambda song: locale.strxfrm(song.title))
 
@@ -44,9 +52,22 @@ class SongPageView(generic.DetailView):
     template_name = "tomikuvzpevnik/viewSong.html"
     context_object_name = "song"
 
+    def get_queryset(self):
+        song_fields = [f.name for f in Song._meta.get_fields()]
+        return (
+            Song.objects.select_related("owner")
+            .only(*song_fields, "owner__username")
+            .all()
+        )
+
+    def get_object(self):
+        self.pk_url_kwarg
+        self.song = super().get_object()
+        return self.song
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        song = self.get_object()
+        song = self.song
         user = self.request.user
         context["editable"] = song.isEditable(user)
 

@@ -17,7 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include,path
 from tomikuvzpevnik.views import register
-#from django.contrib.auth import views as auth_views
+from django.conf import settings
+
+# from django.contrib.auth import views as auth_views
 
 app_name = "tomikuvzpevnik"
 urlpatterns = [
@@ -26,3 +28,8 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/create_account", register, name="sign_up"),
 ]
+
+if settings.DEBUG:
+    from debug_toolbar.toolbar import debug_toolbar_urls
+
+    urlpatterns += debug_toolbar_urls()

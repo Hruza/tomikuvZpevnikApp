@@ -21,10 +21,18 @@ class Song(models.Model):
         return base_to_html(strip_tags(self.lyrics))
 
     def isEditable(self, user: User):
-        return user == self.owner or user.groups.filter(name="Song Admins").exists()
+        return (
+            user.is_authenticated
+            and user == self.owner
+            or user.groups.filter(name="Song Admins").exists()
+        )
 
     def isFavorite(self, user: User):
-        return user == self.owner or user.groups.filter(name="Song Admins").exists()
+        return (
+            user.is_authenticated
+            and user == self.owner
+            or user.groups.filter(name="Song Admins").exists()
+        )
 
 
 def validate_capo(value):
