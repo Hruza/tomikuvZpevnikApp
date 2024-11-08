@@ -31,3 +31,4 @@ web/media
 web/static/CACHE
 stats
 Dockerfile
+configs

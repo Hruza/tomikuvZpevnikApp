@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import os
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,19 +20,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
+with open("configs/configs.json", "r") as f:
+    configs = json.load(f)
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ybc8+6*39&6=#xc4vkpkmaz-05z)ouu5*l=8qh7*n3#zj@s(r)'
+SECRET_KEY = configs["key"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = configs["debug"]
 
 ALLOWED_HOSTS = [
     "192.168.67.1",
     "192.168.0.118",
     "raspberrypi",
     "192.168.0.109",
-    "127.0.0.1"
-    ]
+    "127.0.0.1",
+    "tomikuvzpevnik.cz",
+]
 
 # Application definition
 
@@ -60,8 +64,18 @@ MIDDLEWARE = [
 if DEBUG:
     INSTALLED_APPS += ["debug_toolbar"]
     MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
+    DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _request: DEBUG}
 
-INTERNAL_IPS = ["127.0.0.1", "192.168.67.1", "::1", "0.0.0.0", "192.168.0.109"]
+INTERNAL_IPS = [
+    "::1",
+    "0.0.0.0",
+    "192.168.67.1",
+    "192.168.0.118",
+    "raspberrypi",
+    "192.168.0.109",
+    "127.0.0.1",
+]
+
 
 ROOT_URLCONF = 'project.urls'
 
@@ -85,6 +99,9 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = True
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
