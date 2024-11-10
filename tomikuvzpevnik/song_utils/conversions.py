@@ -7,7 +7,7 @@ import html
 VALID_CHORDS = ["C", "C#","D","D#","E","F", "F#","G","G#","A","B","H","Bb"]
 
 h_converter = {"Bb":"B","B":"H"}
-    
+
 CHORD_HTML = '<span class="chord"><span class="innerchord" tone="{0}" type="{1}">{0}{1}</span></span>'
 CHORD_WRORD_HTML = '<span class="chord_word">{0}</span>'
 BR = '<br>'
@@ -32,7 +32,6 @@ def split_chord(chord:str,use_h = True):
             return chord[:2] if use_h else h_converter.get(chord[:2],chord[:2]), chord[2:]
         else:
             return chord[:1] if use_h else h_converter.get(chord[:1],chord[:1]), chord[1:]
-
 
 
 def replace_chord(matchobj):
@@ -107,7 +106,7 @@ def ultimate_to_base(url):
         response = requests.get(url)
     except requests.exceptions.InvalidURL:
         return None
-    
+
     song_html = response.text
 
     byArtI = song_html.find('"byArtist": {')
@@ -131,10 +130,15 @@ def ultimate_to_base(url):
     song_html = html.unescape(song_html)
 
     output_text = []
-    chords = []
+    chords = None
     for line in song_html.split("\n")[1:300]:
         line = line.rstrip()
-        if not line.startswith("[tab]") and line.startswith("[") and line.endswith("]"):
+        if (
+            not line.startswith("[tab]")
+            and line.startswith("[")
+            and line.endswith("]")
+            and not line.startswith("[ch]")
+        ):
             line = line.strip("[]")
             # Start of verse
             if len(output_text)>0:
@@ -145,12 +149,14 @@ def ultimate_to_base(url):
             elif line == 'Chorus':
                 output_text.append("*")
         elif line.startswith("[tab]"):
+            # Line contains chords for the next line
             line = line.removeprefix("[tab]")
             chords = re.findall("([ ]*)\[ch\]([^\[]*)\[/ch\]",line)
             chords = [(len(spaces),chord) for spaces,chord in chords]
         elif line == "":
             pass
-        else:
+        elif not chords is None:
+            # Line to apply chords to
             line = line.removesuffix("[/tab]")   
 
             line_segments = []
@@ -169,8 +175,12 @@ def ultimate_to_base(url):
             line = line.replace("[ch]","[")
             line = line.replace("[/ch]","]")
             output_text.append(line)
-            chords = []
-
+            chords = None
+        else:
+            # Other lines that may contain chords - e.g. instrumental
+            line = line.replace("[ch]", "[")
+            line = line.replace("[/ch]", "]")
+            output_text.append(line)
 
     return {
         "title":title,
