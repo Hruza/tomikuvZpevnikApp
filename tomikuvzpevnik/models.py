@@ -4,7 +4,7 @@ from tomikuvzpevnik.song_utils.conversions import base_to_html
 from django.utils.html import strip_tags
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-
+from datetime import datetime
 
 class Song(models.Model):
     title = models.CharField(max_length=200)
@@ -13,6 +13,8 @@ class Song(models.Model):
     artist = models.CharField(max_length=200)
     capo = models.IntegerField()
     lyrics = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.title} by {self.artist}"

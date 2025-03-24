@@ -44,7 +44,20 @@ class IndexView(generic.ListView):
                 .all()
             )
         # Sort songs using locale-aware sorting
-        return sorted(songs, key=lambda song: locale.strxfrm(song.title))
+        sort_by = self.request.GET.get("sort", "name")
+        ascending = not self.request.GET.get("order", "1") == "-1"
+
+        if sort_by in ["created", "last_modified"]:
+            prefix = "" if ascending else "-"
+            songs = songs.order_by(prefix + sort_by)
+        else:
+            songs = sorted(
+                songs,
+                key=lambda song: locale.strxfrm(song.title),
+                reverse=not ascending,
+            )
+
+        return songs
 
 
 class SongPageView(generic.DetailView):
