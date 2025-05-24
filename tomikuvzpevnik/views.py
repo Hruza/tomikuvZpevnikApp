@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.decorators import method_decorator
 from django.views import generic
+from django.db.models.functions import Collate
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
 from .models import Song, SongData, UserPreferences
@@ -15,14 +16,11 @@ from .forms import AddSongForm
 
 class IndexView(generic.ListView):
     model = Song
-    ordering = ['title']
+    ordering = ["title"]
     template_name = "tomikuvzpevnik/index.html"
     context_object_name = "song_list"
 
     def get_queryset(self):
-        # Set the locale to use for sorting (e.g., 'en_US.UTF-8')
-        locale.setlocale(locale.LC_ALL, 'cs_CZ.UTF-8')
-
         if self.request.user.is_authenticated:
             favorite_subquery = SongData.objects.filter(
                 user=self.request.user, song=OuterRef("pk"), favorite=True
@@ -50,13 +48,8 @@ class IndexView(generic.ListView):
         if sort_by in ["created", "last_modified"]:
             prefix = "" if ascending else "-"
             songs = songs.order_by(prefix + sort_by)
-        else:
-            songs = sorted(
-                songs,
-                key=lambda song: locale.strxfrm(song.title),
-                reverse=not ascending,
-            )
-
+        else:   
+            songs = songs.order_by(Collate("title", "CZECH_NOCASE"))
         return songs
 
 
