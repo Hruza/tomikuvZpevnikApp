@@ -218,7 +218,7 @@ def register(request: HttpRequest):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False) 
-            user.is_active = False
+            #user.is_active = False
             user.save()
             # send_verification_email(request, user)
             # messages.success(request, _('Please check your email to verify your account.'))
