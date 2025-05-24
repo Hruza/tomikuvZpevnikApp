@@ -1,0 +1,10 @@
+{% autoescape off %}
+Ahoj {{ user.username }},
+
+Děkujeme za vytvoření účtu na Tomíkově zpěvníku! Abychom mohli aktivovat tvůj účet, prosíme, klikni na následující odkaz:
+
+https://{{ domain }}{% url 'tomikuvzpevnik:activate' uidb64=uid token=token %}
+
+Děkujeme,
+Tomíkův zpěvník
+{% endautoescape %}

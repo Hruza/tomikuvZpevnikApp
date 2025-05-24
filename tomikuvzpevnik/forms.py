@@ -4,7 +4,9 @@ from django.forms import ModelForm
 from django import forms
 from tomikuvzpevnik.models import Song
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
 from urllib.parse import urlparse
+from django.contrib.auth.models import User
 
 def validate_no_html(value):
     if '<' in value or '>' in value:
@@ -42,16 +44,52 @@ class SongEditForm(ModelForm):
             "lyrics":"Text písně:",
         }
 
-class RegisterForm(UserCreationForm):
-    """Form to Create new User"""
+class UserRegistrationForm(UserCreationForm):
+    """
+    A custom form for user registration.
+    Extends Django's built-in UserCreationForm for convenience and security.
+    It adds an 'email' field and ensures it's required and unique.
+    """
     usable_password = None
 
-    class Meta:
+    email = forms.EmailField(
+        label="Email",
+        max_length=254,
+        required=True,
+        widget=forms.EmailInput(attrs={'placeholder': 'your.email@example.com'}),
+        help_text="A valid email address is required."
+    )
+
+    class Meta(UserCreationForm.Meta):
         model = get_user_model()
-        fields = ["username", "password1", "password2"]
-    
+        fields = ["email", "username", "password1", "password2"]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["username"].help_text = ""
         self.fields["password1"].help_text = ""
         self.fields["password2"].help_text = ""
+
+    def clean_email(self):
+        """
+        Custom clean method for the email field to ensure uniqueness.
+        Security Priority: Prevent registration with an already existing email.
+        """
+        email = self.cleaned_data['email']
+        if User.objects.filter(email__iexact=email).exists():
+            # Security Priority: Generic error message to prevent email enumeration.
+            # While this specifically mentions email, it's common practice for registration.
+            raise forms.ValidationError("This email address is already registered.")
+        return email
+
+    def save(self, commit=True):
+        """
+        Overrides the save method to ensure the email is saved correctly
+        and the user is created.
+        """
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user
+

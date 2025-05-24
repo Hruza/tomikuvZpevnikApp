@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include,path
-from tomikuvzpevnik.views import register
+from tomikuvzpevnik.views import register,activate_account
 from django.conf import settings
 
 # from django.contrib.auth import views as auth_views
@@ -27,6 +27,7 @@ urlpatterns = [
     path("", include("tomikuvzpevnik.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/create_account", register, name="sign_up"),
+    path("accounts/activate", activate_account, name="activate"),
 ]
 
 if settings.DEBUG:

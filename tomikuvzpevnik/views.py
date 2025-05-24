@@ -1,18 +1,25 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
-from django.utils.decorators import method_decorator
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from django.contrib.sites.shortcuts import get_current_site
 from django.views import generic
 from django.db.models.functions import Collate
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
-from .models import Song, SongData, UserPreferences
+from django.core.mail import EmailMessage
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+
 from random import choice, choices
 from tomikuvzpevnik.forms import SongEditForm
 from tomikuvzpevnik.song_utils.conversions import ultimate_to_base
 from django.db.models import BooleanField, Subquery, OuterRef
 from .models import Song, SongData
-from .forms import AddSongForm, RegisterForm
+from .forms import AddSongForm, UserRegistrationForm
+from django.contrib import messages
+from .tokens import account_activation_token
 from django.contrib import messages
 
 
@@ -214,16 +221,71 @@ def delete_song(request: HttpRequest, pk: int):
 
 
 def register(request: HttpRequest):
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False) 
-            #user.is_active = False
-            user.save()
-            # send_verification_email(request, user)
-            # messages.success(request, _('Please check your email to verify your account.'))
-            return redirect('login') 
-    else:
-        form = RegisterForm()
+    if request.user.is_authenticated:
+        messages.info(request, "You are already logged in.")
+        return redirect("login")
 
-    return render(request, 'registration/create_account.html', {'form': form})
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            # Save the user with is_active=False initially
+            user = form.save(commit=False)
+            user.is_active = False # Account is inactive until email is verified
+            user.save()
+
+            # --- Email Verification Logic ---
+            current_site = get_current_site(request)
+            mail_subject = 'Tomíkův Zpěvník: aktivace účtu'
+            message = render_to_string("registration/account_activation_email.html", {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            to_email = form.cleaned_data.get('email')
+            email = EmailMessage(
+                mail_subject, message, to=[to_email]
+            )
+            try:
+                email.send()
+                messages.success(request, "Please confirm your email address to complete the registration. An activation link has been sent to your email.")
+                return redirect('login') # Redirect to login page after successful registration
+            except Exception as e:
+                # If email sending fails, delete the user or mark for review
+                user.delete() # Or set a flag for admin review
+                messages.error(request, f"There was an error sending the activation email. Please try again later. Error: {e}")
+                # Log the error for debugging
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Failed to send activation email to {to_email}: {e}")
+
+        else:
+            messages.error(request, "Registration failed. Please correct the errors below.")
+    else:
+        form = UserRegistrationForm()
+
+
+    return render(request, "registration/create_account.html", {"form": form})
+
+def activate_account(request, uidb64, token):
+    """
+    Handles account activation via email link.
+    - Decodes UID and validates token.
+    - Activates the user if valid, then logs them in.
+    """
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user) # Log the user in immediately after activation
+        messages.success(request, "Your account has been activated successfully! You are now logged in.")
+        return redirect("login")
+    else:
+        # Security Priority: Generic error message for invalid/expired links.
+        messages.error(request, "The activation link is invalid or has expired. Please try registering again or contact support.")
+        return redirect('myapp:register') # Redirect to registration or an error page
