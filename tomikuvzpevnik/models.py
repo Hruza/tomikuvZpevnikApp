@@ -6,12 +6,22 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from datetime import datetime
 
+
+def validate_capo(value):
+    if value < 0 or value > 11:
+        raise ValidationError(
+            _("%(value)s has to be a value between 0 and 11"),
+            code="invalid",
+            params={"value": value},
+        )
+
+
 class Song(models.Model):
     title = models.CharField(max_length=200)
     # Each song is owned by a user
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     artist = models.CharField(max_length=200)
-    capo = models.IntegerField()
+    capo = models.IntegerField(default=0, validators=[validate_capo])
     lyrics = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -34,15 +44,6 @@ class Song(models.Model):
             user.is_authenticated
             and user == self.owner
             or user.groups.filter(name="Song Admins").exists()
-        )
-
-
-def validate_capo(value):
-    if value % 2 != 0:
-        raise ValidationError(
-            _("%(value)s has to be a value between -11 and 11"),
-            code="invalid",
-            params={"value": value},
         )
 
 

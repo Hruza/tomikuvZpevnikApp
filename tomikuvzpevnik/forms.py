@@ -28,6 +28,7 @@ class SongEditForm(ModelForm):
     title = forms.CharField(max_length=200,validators=[validate_no_html])
     artist = forms.CharField(max_length=200,validators=[validate_no_html])
     lyrics = forms.CharField(widget=forms.Textarea, validators=[validate_no_html])
+    capo = forms.IntegerField(min_value=0,max_value=11, label="Capo", initial=0)
 
     class Meta:
         model = Song

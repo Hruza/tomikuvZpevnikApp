@@ -10,9 +10,11 @@ from .models import Song, SongData, UserPreferences
 from random import choice, choices
 from tomikuvzpevnik.forms import SongEditForm
 from tomikuvzpevnik.song_utils.conversions import ultimate_to_base
-from django.db.models import BooleanField, ExpressionWrapper, Q, Subquery, OuterRef
-import locale
+from django.db.models import BooleanField, Subquery, OuterRef
+from .models import Song, SongData
 from .forms import AddSongForm
+from django.contrib import messages
+
 
 class IndexView(generic.ListView):
     model = Song
@@ -66,9 +68,9 @@ class SongPageView(generic.DetailView):
             .all()
         )
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         self.pk_url_kwarg
-        self.song = super().get_object()
+        self.song = super().get_object(queryset)
         return self.song
 
     def get_context_data(self, *args, **kwargs):
@@ -83,13 +85,13 @@ class SongPageView(generic.DetailView):
 
         context["song_data"] = song_data
         rng_mode = self.request.GET.get("rng_mode", "0")
-        if not rng_mode in {"0", "1", "2"}:
+        if rng_mode not in {"0", "1", "2"}:
             rng_mode = "0"
         context["rng_mode"] = rng_mode
         return context
 
 
-def get_random_song(request:HttpRequest):
+def get_random_song(request: HttpRequest):
     rng_mode = request.GET.get("rng_mode", "0")
     random_pk = None
     if request.user.is_authenticated and rng_mode == "1":
@@ -113,7 +115,7 @@ def get_random_song(request:HttpRequest):
 
 
 @login_required
-def add_song(request:HttpRequest):
+def add_song(request: HttpRequest):
     # if this is a POST request we need to process the form data
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
@@ -121,12 +123,12 @@ def add_song(request:HttpRequest):
 
         if form.is_valid():
             # check whether it's valid:
-            if form.cleaned_data['song_url'].strip() == "":
-                request.session['unsaved_song_data'] = {}
+            if form.cleaned_data["song_url"].strip() == "":
+                request.session["unsaved_song_data"] = {}
                 return redirect(reverse("tomikuvzpevnik:song_edit", args=(0,)))
-            song_data = ultimate_to_base(form.cleaned_data['song_url'])
-            if not song_data is None:
-                request.session['unsaved_song_data'] = song_data
+            song_data = ultimate_to_base(form.cleaned_data["song_url"])
+            if song_data is not None:
+                request.session["unsaved_song_data"] = song_data
                 return redirect(reverse("tomikuvzpevnik:song_edit", args=(0,)))
 
     # if a GET (or any other method) we'll create a blank form
@@ -146,7 +148,7 @@ def update_song_data(request: HttpRequest, pk: int):
         song_data, _ = SongData.objects.get_or_create(user=request.user, song=song)
 
         # Parse AJAX request values
-        if not "favorite" in request.POST.keys():
+        if "favorite" not in request.POST.keys():
             return JsonResponse({"success": False}, status=400)
 
         favorite_value = request.POST.get("favorite") == "true"
@@ -167,17 +169,21 @@ def update_song_data(request: HttpRequest, pk: int):
 
 
 @login_required
-def edit_song(request:HttpRequest, pk:int):
+def edit_song(request: HttpRequest, pk: int):
     if pk == 0:
-        song_data = request.session.get('unsaved_song_data', None)
-        song = Song(**song_data,owner=request.user) 
+        song_data = request.session.get("unsaved_song_data", None)
+        if song_data is None:
+            return redirect(reverse("tomikuvzpevnik:index"))
+        song = Song(**song_data, owner=request.user)
     else:
         song = get_object_or_404(Song, id=pk)
-    
-    if not song.isEditable(request.user):
-        return redirect(reverse("tomikuvzpevnik:song_page", args=(pk,)))  # Redirect if not authorized
 
-    if request.method == 'POST':
+    if not song.isEditable(request.user):
+        return redirect(
+            reverse("tomikuvzpevnik:song_page", args=(pk,))
+        )  # Redirect if not authorized
+
+    if request.method == "POST":
         form = SongEditForm(request.POST, instance=song)
         if form.is_valid():
             new_song = form.save()
@@ -185,19 +191,25 @@ def edit_song(request:HttpRequest, pk:int):
     else:
         form = SongEditForm(instance=song)
 
-    return render(request, "tomikuvzpevnik/editSong.html", {'form': form, 'song': song})
+    return render(request, "tomikuvzpevnik/editSong.html", {"form": form, "song": song})
+
 
 @login_required
-def delete_song(request:HttpRequest, pk:int):
+def delete_song(request: HttpRequest, pk: int):
     song = get_object_or_404(Song, id=pk)
 
-    if song.owner != request.user and not request.user.groups.filter(name="Song Admins").exists():
-        print(f"User {request.user.username} attempted to delete a song '{song.name}' without sufficient rights.")
-        return redirect(reverse("tomikuvzpevnik:song_edit", args=(pk,)))  # Redirect if not authorized
+    if (
+        song.owner != request.user
+        and not request.user.groups.filter(name="Song Admins").exists()
+    ):
+        messages.error(request, "Nemáte oprávnění smazat tuto píseň.")
+        return redirect(
+            reverse("tomikuvzpevnik:song_edit", args=(pk,))
+        )  # Redirect if not authorized
 
-    if request.method == 'POST':
-        print(f"Removing song {song.title}...")
+    if request.method == "POST":
         song.delete()
+        messages.success(request, "Píseň byla úspěšně smazána.")
         return redirect(reverse("tomikuvzpevnik:index"))
 
 

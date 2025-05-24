@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <link rel="shortcut icon"
+          type="image/png"
+          href="{% static 'tomikuvzpevnik/favicon.ico' %}" />
+    <title>Tomíkův zpěvník</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Tomíkův zpěvník" />
+    <meta name="keywords" content="zpěvník, písničky, texty, akordy" />
+    <link rel="stylesheet" href="{% static 'tomikuvzpevnik/utils.css' %}">
+    <title>
+      {% block title %}Tomíkův zpěvník{% endblock title %}
+    </title>
+    {% block extra_head %}{% endblock extra_head %}
+  </head>
+  <body>
+    <div style="text-align: center">
+      <div class="header">
+        {% block header %}{% endblock header %}
+      </div>
+    </div>
+    {% if messages %}
+      <div id="popup-message"
+           style="display: none;
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  width: 100vw;
+                  height: 100vh;
+                  background: rgba(0,0,0,0.4);
+                  z-index: 9999;
+                  justify-content: center;
+                  align-items: center">
+        <div style="background: #fff;
+                    padding: 2em 3em;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+                    min-width: 300px;
+                    max-width: 90vw;
+                    text-align: center;
+                    position: relative">
+          <button onclick="document.getElementById('popup-message').style.display='none';"
+                  style="position: absolute;
+                         top: 8px;
+                         right: 12px;
+                         background: none;
+                         border: none;
+                         font-size: 1.5em;
+                         cursor: pointer">&times;</button>
+          <ul class="messages" style="list-style: none; padding: 0; margin: 0;">
+            {% for message in messages %}
+              <li class="{{ message.tags }}" style="margin-bottom: 0.5em;">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <script>document.getElementById('popup-message').style.display = 'flex';</script>
+    {% endif %}
+    {% block content %}
+    {% endblock content %}
+  </body>
+</html>
