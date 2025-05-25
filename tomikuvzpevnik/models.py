@@ -4,7 +4,6 @@ from tomikuvzpevnik.song_utils.conversions import base_to_html
 from django.utils.html import strip_tags
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from datetime import datetime
 
 
 def validate_capo(value):

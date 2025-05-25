@@ -27,7 +27,7 @@ urlpatterns = [
     path("", include("tomikuvzpevnik.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/create_account", register, name="sign_up"),
-    path("accounts/activate", activate_account, name="activate"),
+    path("accounts/activate/<uidb64>/<token>", activate_account, name="activate"),
 ]
 
 if settings.DEBUG:

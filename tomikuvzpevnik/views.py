@@ -233,34 +233,32 @@ def register(request: HttpRequest):
             user.is_active = False # Account is inactive until email is verified
             user.save()
 
-            # --- Email Verification Logic ---
-            current_site = get_current_site(request)
             mail_subject = 'Tomíkův Zpěvník: aktivace účtu'
-            message = render_to_string("registration/account_activation_email.html", {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
+            current_site = get_current_site(request)
             to_email = form.cleaned_data.get('email')
-            email = EmailMessage(
-                mail_subject, message, to=[to_email]
-            )
             try:
+                message = render_to_string("registration/account_activation_email.html", {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                })
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.content_subtype = "html"
                 email.send()
-                messages.success(request, "Please confirm your email address to complete the registration. An activation link has been sent to your email.")
+                messages.success(request, "Odkaz pro aktivaci účtu byl odeslán na váš email. Pro aktivaci účtu klikněte na odkaz v emailu.")
                 return redirect('login') # Redirect to login page after successful registration
             except Exception as e:
                 # If email sending fails, delete the user or mark for review
                 user.delete() # Or set a flag for admin review
-                messages.error(request, f"There was an error sending the activation email. Please try again later. Error: {e}")
+                messages.error(request, "Nastala chyba při odesílání emailu. Zkuste to prosím znovu později.")
                 # Log the error for debugging
-                import logging
-                logger = logging.getLogger(__name__)
-                logger.error(f"Failed to send activation email to {to_email}: {e}")
+                print(f"Failed to send activation email to {to_email}: {e}")
 
         else:
-            messages.error(request, "Registration failed. Please correct the errors below.")
+            messages.error(request, "Chyba při registraci. Zkontrolujte prosím zadané údaje.")
     else:
         form = UserRegistrationForm()
 
@@ -282,10 +280,8 @@ def activate_account(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        login(request, user) # Log the user in immediately after activation
-        messages.success(request, "Your account has been activated successfully! You are now logged in.")
+        messages.success(request, "Účet byl úspěšně aktivován! Nyní se můžete přihlásit.")
         return redirect("login")
     else:
-        # Security Priority: Generic error message for invalid/expired links.
-        messages.error(request, "The activation link is invalid or has expired. Please try registering again or contact support.")
-        return redirect('myapp:register') # Redirect to registration or an error page
+        messages.error(request, "Aktivace účtu selhala. Odkaz může být neplatný nebo vypršel.")
+        return redirect('sign_up') # Redirect to registration or an error page
