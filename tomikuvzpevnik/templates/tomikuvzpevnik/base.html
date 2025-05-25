@@ -23,43 +23,19 @@
       </div>
     </div>
     {% if messages %}
-      <div id="popup-message"
-           style="display: none;
-                  position: fixed;
-                  top: 0;
-                  left: 0;
-                  width: 100vw;
-                  height: 100vh;
-                  background: rgba(0,0,0,0.4);
-                  z-index: 9999;
-                  justify-content: center;
-                  align-items: center">
-        <div style="background: #fff;
-                    padding: 2em 3em;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 16px rgba(0,0,0,0.3);
-                    min-width: 300px;
-                    max-width: 90vw;
-                    text-align: center;
-                    position: relative">
-          <button onclick="document.getElementById('popup-message').style.display='none';"
-                  style="position: absolute;
-                         top: 8px;
-                         right: 12px;
-                         background: none;
-                         border: none;
-                         font-size: 1.5em;
-                         cursor: pointer">&times;</button>
-          <ul class="messages" style="list-style: none; padding: 0; margin: 0;">
+      
+    <div id="message-container" class="message-container">
             {% for message in messages %}
-              <li class="{{ message.tags }}" style="margin-bottom: 0.5em;">{{ message }}</li>
+              <div class="message-item {{ message.tags }}">
+                {{ message }}
+                <button class="close-button" onclick="this.parentNode.remove()">&times;</button>
+              </div>
             {% endfor %}
-          </ul>
-        </div>
       </div>
-      <script>document.getElementById('popup-message').style.display = 'flex';</script>
     {% endif %}
-    {% block content %}
-    {% endblock content %}
+    <div class="content">
+      {% block content %}
+      {% endblock content %}
+    <div>
   </body>
 </html>

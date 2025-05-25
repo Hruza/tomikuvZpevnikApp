@@ -1,7 +1,8 @@
 {% extends "tomikuvzpevnik/base.html" %}
 {% load static %}
 {% block extra_head %}
-    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/accounts.css' %}">
+    <link rel="stylesheet"
+          href=" {% static 'tomikuvzpevnik/accountForm.css' %}">
 {% endblock extra_head %}
 {% block header %}
     <div class="header-left">
@@ -10,17 +11,11 @@
            class="button_with_border">
             <span>
                 <img src="{% static 'tomikuvzpevnik/icons/back_arrow.svg' %}"
-                     width="50px"
-                     height="50px"
-                     style="height:50%;
-                            width:50%;
-                            margin-top:17px" />
+                     width="50%"
+                     height="50%"
+                     style="margin-top:17px" alt=""/>
             </span>
         </a>
     </div>
-    <div class="header-right">
-        
-    </div>
-</div>
-<div class="header-right"></div>
+    <div class="header-right"></div>
 {% endblock header %}

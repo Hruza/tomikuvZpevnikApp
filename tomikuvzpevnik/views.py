@@ -12,7 +12,7 @@ from tomikuvzpevnik.forms import SongEditForm
 from tomikuvzpevnik.song_utils.conversions import ultimate_to_base
 from django.db.models import BooleanField, Subquery, OuterRef
 from .models import Song, SongData
-from .forms import AddSongForm
+from .forms import AddSongForm, RegisterForm
 from django.contrib import messages
 
 
@@ -215,7 +215,7 @@ def delete_song(request: HttpRequest, pk: int):
 
 def register(request: HttpRequest):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False) 
             #user.is_active = False
@@ -224,6 +224,6 @@ def register(request: HttpRequest):
             # messages.success(request, _('Please check your email to verify your account.'))
             return redirect('login') 
     else:
-        form = UserCreationForm()
+        form = RegisterForm()
 
     return render(request, 'registration/create_account.html', {'form': form})

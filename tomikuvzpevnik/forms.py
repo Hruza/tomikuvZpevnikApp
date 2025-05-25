@@ -1,3 +1,5 @@
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user_model
 from django.forms import ModelForm
 from django import forms
 from tomikuvzpevnik.models import Song
@@ -39,6 +41,17 @@ class SongEditForm(ModelForm):
             "capo":"Capo:",
             "lyrics":"Text písně:",
         }
-        #help_texts = {
-        #    "name": _("Some useful help text."),
-        #}
+
+class RegisterForm(UserCreationForm):
+    """Form to Create new User"""
+    usable_password = None
+
+    class Meta:
+        model = get_user_model()
+        fields = ["username", "password1", "password2"]
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].help_text = ""
+        self.fields["password1"].help_text = ""
+        self.fields["password2"].help_text = ""

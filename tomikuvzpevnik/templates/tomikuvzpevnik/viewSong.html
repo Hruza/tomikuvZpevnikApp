@@ -1,94 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>{{ name }}</title>
-    <meta charset="UTF-8" />
-    {% load static %}
-    <link rel="shortcut icon" type="image/png" href="{% static 'tomikuvzpevnik/favicon.ico' %}" />
-    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/utils.css' %}" />
-    <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/songView.css' %}" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+{% extends "tomikuvzpevnik/base.html" %}
+{% load static %}
+{% block extra_head %}
+  <link rel="stylesheet" href=" {% static 'tomikuvzpevnik/songView.css' %}" />
     <script src=" {% static 'tomikuvzpevnik/songControls.js' %}"></script>
-  </head>
-  <body>
-    <div class="song">
-      <div class="header">
-        <div class="header-left">
-          <a href="{% url 'tomikuvzpevnik:index' %}" id="return" class="button_no_border"><span><img src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}" style="width:50%;height:50%;margin-top:17px;" /></span></a>
-        </div>
-        <div class="header-right">
+  {% endblock extra_head %}
+{% block header %}
+  <div class="header-left">
+    <a href="{% url 'tomikuvzpevnik:index' %}"
+       id="return"
+       class="button_no_border"><span>
+      <img src=" {% static 'tomikuvzpevnik/icons/back_arrow.svg' %}"
+           style="width:50%;
+                  height:50%;
+                  margin-top:17px" />
+    </span></a>
+  </div>
+  <div class="header-right">
+    {% if user.is_authenticated %}
+      <a id="random_song"
+         href="{% url 'tomikuvzpevnik:song_random' %}?rng_mode={{ rng_mode }}"
+         class="button_no_border square_medium">
+      {% else %}
+        <a id="random_song"
+           href="{% url 'tomikuvzpevnik:song_random' %}"
+           class="button_no_border square_medium">
+    {% endif %}
+        <img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}"
+             style="width:95%" />
+      </a>
+      <button onclick="scrollpage()" class="button_no_border square_medium">
+        <img src=" {% static 'tomikuvzpevnik/icons/scroll_down.svg' %}"
+             style="width:110%" />
+      </button>
+      {% if user.is_authenticated %}
+        <button id="favorite_button" class="button_no_border square_medium">
+          <svg width="250"
+               height="250"
+               viewBox="0 0 250 250"
+               fill="none"
+               xmlns="http://www.w3.org/2000/svg">
+            <path id="favorite_star" style="transition: 0.2s;" d="M120.77 25.623C122.09 22.2171 126.91 22.2171 128.23 25.623L150.991 84.3503C151.559 85.8146 152.93 86.8114 154.498 86.8986L217.385 90.3982C221.032 90.6012 222.521 95.1845 219.69 97.4925L170.871 137.288C169.654 138.28 169.129 139.893 169.531 141.411L185.636 202.301C186.57 205.832 182.671 208.665 179.601 206.685L126.668 172.553C125.348 171.702 123.652 171.702 122.332 172.553L69.3989 206.685C66.329 208.665 62.4302 205.832 63.3642 202.301L79.4689 141.411C79.8705 139.893 79.3465 138.28 78.1292 137.288L29.3099 97.4925C26.4786 95.1845 27.9678 90.6012 31.615 90.3982L94.5016 86.8986C96.0696 86.8114 97.4415 85.8146 98.009 84.3503L120.77 25.623Z" stroke="black" stroke-width="15" />
+          </svg>
+        </button>
+      {% else %}
+        <a href="{% url 'login' %}" class="button_no_border square_medium">
+          <img src=" {% static 'tomikuvzpevnik/icons/favorite.svg' %}"
+               style="width:95%" />
+        </a>
+      {% endif %}
+      <button onclick="triggerDropdown()" class="button_no_border square_medium">
+        <img src=" {% static 'tomikuvzpevnik/icons/menu.svg' %}"
+             style="width:110%" />
+      </button>
+      <div class="dropdown-menu" id="dropdown">
+        <div class="dropdown-content">
           {% if user.is_authenticated %}
-          <a id="random_song" href="{% url 'tomikuvzpevnik:song_random' %}?rng_mode={{ rng_mode }}" class="button_no_border square_medium">
-            {% else %}
-            <a id="random_song" href="{% url 'tomikuvzpevnik:song_random' %}" class="button_no_border square_medium">
-          {% endif %}
-            <img src=" {% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:95%" />
-          </a>
-          <button onclick="scrollpage()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/scroll_down.svg' %}" style="width:110%" /></button>
-          {% if user.is_authenticated %}
-            <button id="favorite_button" class="button_no_border square_medium">
-              <svg width="250" height="250" viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path id="favorite_star" style="transition: 0.2s;" d="M120.77 25.623C122.09 22.2171 126.91 22.2171 128.23 25.623L150.991 84.3503C151.559 85.8146 152.93 86.8114 154.498 86.8986L217.385 90.3982C221.032 90.6012 222.521 95.1845 219.69 97.4925L170.871 137.288C169.654 138.28 169.129 139.893 169.531 141.411L185.636 202.301C186.57 205.832 182.671 208.665 179.601 206.685L126.668 172.553C125.348 171.702 123.652 171.702 122.332 172.553L69.3989 206.685C66.329 208.665 62.4302 205.832 63.3642 202.301L79.4689 141.411C79.8705 139.893 79.3465 138.28 78.1292 137.288L29.3099 97.4925C26.4786 95.1845 27.9678 90.6012 31.615 90.3982L94.5016 86.8986C96.0696 86.8114 97.4415 85.8146 98.009 84.3503L120.77 25.623Z" stroke="black" stroke-width="15"/>
-              </svg>
-            </button>
-          {% else %}
-            <a href="{% url 'login' %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/favorite.svg' %}" style="width:95%" /></a>
-          {% endif %}
-          <button onclick="triggerDropdown()" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/menu.svg' %}" style="width:110%" /></button>
-          <div class="dropdown-menu" id="dropdown">
-            <div class="dropdown-content">
-              {% if user.is_authenticated %}
-              <div id="random_selection">
-                <img src="{% static 'tomikuvzpevnik/icons/random_song.svg' %}" style="width:20px" />
-                <select id="random_mode" selected="{{ rng_mode }}" onchange="UpdateRng()">
-                  <option value="0">Všechny</option>
-                  <option value="1">Spíše oblíbené</option>
-                  <option value="2">Pouze oblíbené</option>
-                </select>
-                <script>
+            <div id="random_selection">
+              <img src="{% static 'tomikuvzpevnik/icons/random_song.svg' %}"
+                   style="width:20px" />
+              <select id="random_mode" selected="{{ rng_mode }}" onchange="UpdateRng()">
+                <option value="0">Všechny</option>
+                <option value="1">Spíše oblíbené</option>
+                <option value="2">Pouze oblíbené</option>
+              </select>
+              <script>
                   randomSongButton = document.getElementById("random_song")
                   rngSelection = document.getElementById("random_mode")
                   function UpdateRng(){
                     randomSongButton.href = `{% url 'tomikuvzpevnik:song_random' %}?rng_mode=${rngSelection.value}`
                   }
-                </script>
-              </div>
-              {% endif %}
-              {% if editable %}
-                <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}" class="button_no_border square_medium"><img src=" {% static 'tomikuvzpevnik/icons/edit_song.svg' %}" style="width:90%" /></a>
-              {% endif %}
-              <div class="transposition" style="justify-self: end;">
-                <div style="grid-area: t_label;">
-                  <img src=" {% static 'tomikuvzpevnik/icons/transpose.svg' %}" style="width:100%;top:10px;" />
-                </div>
-                <div style="grid-area: down;text-align: right;">
-                  <button onclick="transpose(-1)" class="button_no_border trans_button">-</button>
-                </div>
-                <div class="trans" id="trans" style="text-align:center;grid-area: number;">0</div>
-                <div style="grid-area: up;text-align: left;">
-                  <button onclick="transpose(+1)" class="button_no_border trans_button">+</button>
-                </div>
-              </div>  
+              </script>
+            </div>
+          {% endif %}
+          {% if editable %}
+            <a href="{% url 'tomikuvzpevnik:song_edit' song.id %}"
+               class="button_no_border square_medium">
+              <img src=" {% static 'tomikuvzpevnik/icons/edit_song.svg' %}"
+                   style="width:90%" />
+            </a>
+          {% endif %}
+          <div class="transposition" style="justify-self: end;">
+            <div style="grid-area: t_label;">
+              <img src=" {% static 'tomikuvzpevnik/icons/transpose.svg' %}"
+                   style="width:100%;
+                          top:10px" />
+            </div>
+            <div style="grid-area: down;text-align: right;">
+              <button onclick="transpose(-1)" class="button_no_border trans_button">-</button>
+            </div>
+            <div class="trans" id="trans" style="text-align:center;grid-area: number;">0</div>
+            <div style="grid-area: up;text-align: left;">
+              <button onclick="transpose(+1)" class="button_no_border trans_button">+</button>
             </div>
           </div>
-          <div class="dropdown-menu"></div>
         </div>
       </div>
-      
-      <div id="hide"></div>
-      <h1 id="song_name">{{ song.title }}</h1>
-      <h3 id="author">{{ song.artist }}</h3>
-
-      <div class="songtext">
-        <div class="song_container">
-          {% if song.capo != 0 %}
-            <div id="capo">Capo {{ song.capo }}</div>
-          {% endif %}
-          {{ song.get_html_text|safe }}
-        </div>
-      </div>
-    </div>
-    {% if user.is_authenticated %}
+      <div class="dropdown-menu"></div>
+  </div>
+  {% if user.is_authenticated %}
       <script>
         var favorite_button = document.getElementById('favorite_button');
         var favorite_path = document.getElementById('favorite_star');
@@ -141,5 +150,17 @@
         });
       </script>
     {% endif %}
-  </body>
-</html>
+{% endblock header %}
+{% block content %}
+    <div class="song">
+      <div id="hide"></div>
+      <h1 id="song_name">{{ song.title }}</h1>
+      <h3 id="author">{{ song.artist }}</h3>
+      <div class="songtext">
+        <div class="song_container">
+          {% if song.capo != 0 %}<div id="capo">Capo {{ song.capo }}</div>{% endif %}
+          {{ song.get_html_text|safe }}
+        </div>
+      </div>
+    </div>
+  {% endblock content %}

@@ -3,18 +3,18 @@
     --text2: rgb(76, 76, 76);
     --text3: rgb(116, 116, 116);
     --text4: rgb(181, 181, 181);
-    --background0: rgb(255,255,255);
+    --background0: rgb(255, 255, 255);
     --background1: rgb(255, 255, 255);
     --background2: rgb(221, 221, 223);
-    --accent1:rgb(136, 136, 136);
-    --accent2:rgb(136, 136, 136);
-    --accent2:rgb(166, 166, 166);
+    --accent1: rgb(136, 136, 136);
+    --accent2: #0a94bf;
+    --accent3: rgb(166, 166, 166);
 }
 
 body {
     background-color: var(--background0);
     color: var(--text1);
-    margin:0;
+    margin: 0;
 }
 
 .header {
@@ -29,20 +29,22 @@ body {
     background-color: var(--background0);
 }
 
-.header .header-left{
+.header .header-left {
     display: flex;
-    justify-self:left;
-}
-.header .header-right{
-    display: flex;
-    justify-self:right;
-}
-.header .header-center{
-    display: flex;
-    justify-self:center;
+    justify-self: left;
 }
 
-.button_with_border{
+.header .header-right {
+    display: flex;
+    justify-self: right;
+}
+
+.header .header-center {
+    display: flex;
+    justify-self: center;
+}
+
+.button_with_border {
     transition-duration: 0.4s;
     background-color: var(--background1);
     color: var(--text2);
@@ -55,40 +57,40 @@ body {
 }
 
 .button_with_border:hover {
-    background-color: var(--background2); /* Green */
+    background-color: var(--background2);
+    /* Green */
     color: var(--text1);
 }
 
-.button_no_border{
+.button_no_border {
     text-align: center;
     transition-duration: 0.4s;
     background-color: var(--background1);
     border-radius: 8px;
     border-width: 0;
-    display:flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
 }
 
 .button_no_border:hover {
-    background-color: var(--background2); /* Green */
+    background-color: var(--background2);
+    /* Green */
     color: var(--text1);
 }
 
-#popup{
+#popup {}
 
-}
-
-a{
+a {
     text-decoration: none;
     color: var(--text1);
 }
 
-.square_medium{
+.square_medium {
     width: 55px;
-        height: 55px;
-    display:flex;
+    height: 55px;
+    display: flex;
 }
 
 /* return button */
@@ -130,4 +132,84 @@ a{
 #return:hover:after {
     opacity: 1;
     right: 20px;
+}
+
+.content {
+    text-align: center;
+}
+
+/* Messages */
+.message-container {
+    position: fixed;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 999;
+    padding: 0.5rem 1rem;
+    box-sizing: border-box;
+}
+
+.message-item {
+    width: 100%;
+    max-width: 600px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    opacity: 1;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    transform: translateY(0);
+}
+
+.message-item.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+/* Specific styles for different message types */
+.message-item.success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.message-item.info {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.message-item.warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.message-item.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 0.25rem;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s ease-in-out;
+    border-radius: 9999px;
+}
+
+.close-button:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.1);
 }
