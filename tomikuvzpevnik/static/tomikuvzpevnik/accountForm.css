@@ -1,8 +1,8 @@
 form{
     width: 100%;
-    max-width: 350px;
+    max-width: 320px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 30px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -43,7 +43,6 @@ form button {
     margin: 8px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
-    max-width: 300px;
 }
 
 .form-link {
