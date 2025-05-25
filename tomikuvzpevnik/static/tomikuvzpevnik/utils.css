@@ -9,6 +9,7 @@
     --accent1: rgb(136, 136, 136);
     --accent2: #0a94bf;
     --accent3: rgb(166, 166, 166);
+    --error: rgb(139, 7, 7);
 }
 
 body {

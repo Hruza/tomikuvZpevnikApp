@@ -15,17 +15,17 @@
               {# Uses the .form-label class #}
               {{ field.label }}
             </label>
-            {# The form-input class is already applied via widget.attrs in forms.py #}
-            {{ field }}
-            {% if field.help_text %}
-              <p class="help-text">{{ field.help_text }}</p>
-              {# Uses the .help-text class #}
-            {% endif %}
             {% if field.errors %}
               <ul class="error-list">
                 {# Uses the .error-list class #}
                 {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
               </ul>
+            {% endif %}
+            {# The form-input class is already applied via widget.attrs in forms.py #}
+            {{ field }}
+            {% if field.help_text %}
+              <p class="help-text">{{ field.help_text }}</p>
+              {# Uses the .help-text class #}
             {% endif %}
           </div>
         {% endfor %}
