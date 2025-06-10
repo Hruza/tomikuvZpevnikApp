@@ -23,11 +23,18 @@ body {
     display: flex;
     justify-content: space-between;
     overflow-x: overlay;
-    position: sticky;
+    position: fixed;
     top: 0;
+    right: 0;
+    left:0;
+    height: 55px;
     z-index: 10;
     padding: 10px 10px 5px 10px;
     background-color: var(--background0);
+}
+
+.content {
+    padding-top: 70px; 
 }
 
 .header .header-left {

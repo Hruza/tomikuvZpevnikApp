@@ -1,53 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        {% load static %} 
-        <script src="{% static 'tomikuvzpevnik/songList.js' %}"></script>   
-        <link rel="shortcut icon" type="image/png" href="{% static 'tomikuvzpevnik/favicon.ico' %}"/>         
-        <link rel="stylesheet" href="{% static 'tomikuvzpevnik/utils.css' %}">
-        <link rel="stylesheet" href="{% static 'tomikuvzpevnik/songIndex.css' %}">
-        <link rel="stylesheet" href="{% static 'tomikuvzpevnik/sidebar.css' %}">
-        <title>Tomíkův zpěvník</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
-    <body>
-        <div id="hide"></div>
-        <div id="control" class="header" style="justify-items: center;grid-template-columns: 1fr 0.5fr 1fr;">
-            <div class="header-left">
-                <a class="button_no_border square_medium" id="open_pdf_menu">
-                    <img src="{% static 'tomikuvzpevnik/icons/pdf_songbook.svg' %}" style="width:37px">
-                </a>
-            </div>
-            <div class="header-center">
-                <a href="{% url 'tomikuvzpevnik:song_add' %}" class="button_no_border square_medium"><span style="font-size:30px">+</span></a>
-            </div>
-            <div class="header-right">
-                {% if user.is_authenticated %}
-                <a class="button_no_border square_medium" id="account-button">
-                    <img src="{% static 'tomikuvzpevnik/icons/account.svg' %}">
-                </a>
-                {% else %}
-                <a href="{% url 'login' %}" class="button_no_border square_medium" id="account-button">
-                    <img src="{% static 'tomikuvzpevnik/icons/account.svg' %}">
-                </a>
-                {% endif %}
-            </div>
-        </div>
-        <div id="sidebar-left">
-            <div id="sidebar-left_menu">
-                <a class="sidebar_button button_with_border" id="close_pdf_menu">
-                    Zpět
-                </a>
-                <a class="sidebar_button button_with_border">
-                    
-                </a>
-                <a class="sidebar_button button_with_border">
-                    Stáhnout zpěvník <br> v aktuální verzi
-                </a>
-            </div>
-        </div>
+{% extends "tomikuvzpevnik/base.html" %}
+{% load static %}
+{% block extra_head %}
+    <script src="{% static 'tomikuvzpevnik/songList.js' %}"></script>
+    <link rel="shortcut icon"
+          type="image/png"
+          href="{% static 'tomikuvzpevnik/favicon.ico' %}" />
+    <link rel="stylesheet" href="{% static 'tomikuvzpevnik/songIndex.css' %}">
+    <link rel="stylesheet" href="{% static 'tomikuvzpevnik/sidebar.css' %}">
+{% endblock extra_head %}
+{% block header %}
+    <div class="header-left">
+        <a class="button_no_border square_medium" id="open_pdf_menu">
+            <img src="{% static 'tomikuvzpevnik/icons/pdf_songbook.svg' %}"
+                 style="width:37px">
+        </a>
+    </div>
+    <div class="header-center">
+        <a href="{% url 'tomikuvzpevnik:song_add' %}"
+           class="button_no_border square_medium"><span style="font-size:30px">+</span></a>
+    </div>
+    <div class="header-right">
         {% if user.is_authenticated %}
+            <a class="button_no_border square_medium" id="account-button">
+                <img src="{% static 'tomikuvzpevnik/icons/account.svg' %}">
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}"
+               class="button_no_border square_medium"
+               id="account-button">
+                <img src="{% static 'tomikuvzpevnik/icons/account.svg' %}">
+            </a>
+        {% endif %}
+    </div>
+{% endblock header %}
+{% block content %}
+        <div id="hide"></div>
+    <div id="sidebar-left">
+        <div id="sidebar-left_menu">
+            <a class="sidebar_button button_with_border" id="close_pdf_menu">Zpět</a>
+            <a class="sidebar_button button_with_border"></a>
+            <a class="sidebar_button button_with_border">
+                Stáhnout zpěvník
+                <br>
+                v aktuální verzi
+            </a>
+        </div>
+    </div>
+    {% if user.is_authenticated %}
         <div id="sidebar-right">
             <div id="sidebar-right_menu">
                 <form method="post" action="{% url 'logout' %}">
@@ -56,35 +55,41 @@
                 </form>
             </div>
         </div>
-        {% endif %}
-        <h2 style="text-align:center">Tomíkův zpěvník</h3>
-            <h3 style="text-align:center">&#127925; Seznam písniček &#127925;</h3>
-            <div class="search">
-                <input type="search" placeholder="Hledat..." id="searchInput"/>
-            </div>
-            <div class="list_container">
-                {% if song_list %}
-                <div class="song_list">
-                    {% for song in song_list %}
+    {% endif %}
+    <h2 style="text-align:center">
+        Tomíkův zpěvník
+    </h2>
+    <h3 style="text-align:center">&#127925; Seznam písniček &#127925;</h3>
+    <div class="search">
+        <input type="search" placeholder="Hledat..." id="searchInput" />
+    </div>
+    <div class="list_container">
+        {% if song_list %}
+            <div class="song_list">
+                {% for song in song_list %}
                     <div class="song_item" owner="{{ song.owner }}">
                         <a href="{% url 'tomikuvzpevnik:song_page' song.id %}">
                             <div class="song_ref">
                                 <span class="song_name">{{ song.title }}
-                                    {% if user.is_authenticated and song.favorite  %}
-                                    &nbsp;&nbsp;<img src="{% static 'tomikuvzpevnik/icons/favorite_full.svg' %}" style="width:1em;position:absolute;height: 1em;transform:translate(-0.6em, 1px);">
+                                    {% if user.is_authenticated and song.favorite %}
+                                        &nbsp;&nbsp;
+                                        <img src="{% static 'tomikuvzpevnik/icons/favorite_full.svg' %}"
+                                             style="width:1em;
+                                                    position:absolute;
+                                                    height: 1em;
+                                                    transform:translate(-0.6em, 1px)">
                                     {% endif %}
                                 </span>
                                 <span class="song_author">{{ song.artist }}</span>
-                                <span class="owner">{{ song.owner}}</span>
+                                <span class="owner">{{ song.owner }}</span>
                             </div>
                         </a>
                     </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                Nebyly nalezeny žádné písničky.
-                {% endif %}
+                {% endfor %}
             </div>
-            <script src="{% static 'tomikuvzpevnik/menu.js' %}"></script>   
-        </body>
-        </html>
+        {% else %}
+            Nebyly nalezeny žádné písničky.
+        {% endif %}
+    </div>
+    <script src="{% static 'tomikuvzpevnik/menu.js' %}"></script>
+{% endblock content %}
