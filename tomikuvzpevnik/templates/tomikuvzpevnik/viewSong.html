@@ -58,11 +58,11 @@
             <div id="random_selection">
               <img src="{% static 'tomikuvzpevnik/icons/random_song.svg' %}"
                    style="width:20px" />
-              <select id="random_mode" selected="{{ rng_mode }}" onchange="UpdateRng()">
-                <option value="0">Všechny</option>
-                <option value="1">Spíše oblíbené</option>
-                <option value="2">Pouze oblíbené</option>
-              </select>
+                <select id="random_mode" onchange="UpdateRng()">
+                <option value="0" {% if rng_mode == "0" %}selected{% endif %}>Všechny</option>
+                <option value="1" {% if rng_mode == "1" %}selected{% endif %}>Spíše oblíbené</option>
+                <option value="2" {% if rng_mode == "2" %}selected{% endif %}>Pouze oblíbené</option>
+                </select>
               <script>
                   randomSongButton = document.getElementById("random_song")
                   rngSelection = document.getElementById("random_mode")
