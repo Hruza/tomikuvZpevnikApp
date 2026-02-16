@@ -1,8 +1,9 @@
 import re
 from bs4 import BeautifulSoup
-import requests
+import cloudscraper
 from urllib.parse import urlparse
 import html
+import time
 
 VALID_CHORDS = ["C", "C#","D","D#","E","F", "F#","G","G#","A","B","H","Bb"]
 
@@ -102,9 +103,18 @@ def ultimate_to_base(url):
         parsed_url = urlparse(url)
         hostname = str(parsed_url.netloc)
         if not hostname.endswith("ultimate-guitar.com"):
-            return None 
-        response = requests.get(url)
-    except requests.exceptions.InvalidURL:
+            return None
+
+        # Use cloudscraper to bypass Cloudflare protection
+        scraper = cloudscraper.create_scraper()
+
+        # Add a small delay to avoid rate limiting
+        time.sleep(0.5)
+
+        response = scraper.get(url, timeout=15)
+        response.raise_for_status()
+    except Exception as e:
+        print(f"Error fetching URL: {e}")
         return None
 
     song_html = response.text
@@ -188,3 +198,9 @@ def ultimate_to_base(url):
         "lyrics":"\n".join(output_text),
         "capo":0,
     }
+
+
+if __name__ == "__main__":
+    url = "https://tabs.ultimate-guitar.com/tab/dua-lipa/love-again-chords-3043638"
+    result = ultimate_to_base(url)
+    print(result)
