@@ -1,27 +1,31 @@
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import get_user_model
-from django.forms import ModelForm
-from django import forms
-from tomikuvzpevnik.models import Song
-from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import UserCreationForm
+from typing import ClassVar
 from urllib.parse import urlparse
+
+from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm
+
+from tomikuvzpevnik.models import Song
 
 
 def validate_no_html(value):
     if "<" in value or ">" in value:
-        raise ValidationError(f'Invalid characters in use: ">" or "<"', code="invalid")
+        msg = 'Invalid characters in use: ">" or "<"'
+        raise ValidationError(msg, code="invalid")
 
 
 def validate_url(value):
     if value.strip() == "":
         return
-    else:
-        parsed_url = urlparse(value)
-        hostname = str(parsed_url.netloc)
-        if not hostname.endswith("ultimate-guitar.com"):
-            raise ValidationError("URL musí být ze stránky 'ultimate-guitar.com'")
+
+    parsed_url = urlparse(value)
+    hostname = str(parsed_url.netloc)
+    if not hostname.endswith("ultimate-guitar.com"):
+        msg = "URL musí být ze stránky 'ultimate-guitar.com'"
+        raise ValidationError(msg)
 
 
 class AddSongForm(forms.Form):
@@ -42,7 +46,7 @@ class SongEditForm(ModelForm):
     class Meta:
         model = Song
         fields = ["title", "artist", "capo", "lyrics"]
-        labels = {
+        labels: ClassVar = {
             "title": "Název písničky",
             "artist": "Autor/Interpret",
             "capo": "Capo:",
@@ -51,8 +55,8 @@ class SongEditForm(ModelForm):
 
 
 class UserRegistrationForm(UserCreationForm):
-    """
-    A custom form for user registration.
+    """A custom form for user registration.
+
     Extends Django's built-in UserCreationForm for convenience and security.
     It adds an 'email' field and ensures it's required and unique.
     """
@@ -69,7 +73,7 @@ class UserRegistrationForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = get_user_model()
-        fields = ["email", "username", "password1", "password2"]
+        fields: ClassVar = ["email", "username", "password1", "password2"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -79,22 +83,20 @@ class UserRegistrationForm(UserCreationForm):
         self.fields["email"].help_text = ""
 
     def clean_email(self):
-        """
-        Custom clean method for the email field to ensure uniqueness.
+        """Clean the email field to ensure uniqueness.
+
         Security Priority: Prevent registration with an already existing email.
         """
         email = self.cleaned_data["email"]
         if User.objects.filter(email__iexact=email).exists():
             # Security Priority: Generic error message to prevent email enumeration.
             # While this specifically mentions email, it's common practice for registration.
-            raise forms.ValidationError("This email address is already registered.")
+            msg = "This email address is already registered."
+            raise forms.ValidationError(msg)
         return email
 
     def save(self, commit=True):
-        """
-        Overrides the save method to ensure the email is saved correctly
-        and the user is created.
-        """
+        """Override the save method to ensure the email is saved correctly and the user is created."""
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"]
         if commit:

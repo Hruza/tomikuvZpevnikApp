@@ -27,7 +27,7 @@ with open("configs/configs.json", "r") as f:
 SECRET_KEY = configs["key"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = configs["debug"]
+DEBUG = bool(configs["debug"])
 
 ALLOWED_HOSTS = [
     "192.168.67.1",
@@ -173,3 +173,35 @@ STATIC_ROOT = "/var/www/static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG" if DEBUG else "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

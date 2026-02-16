@@ -1,26 +1,31 @@
-from django.shortcuts import get_object_or_404, render, redirect
+import logging
+from random import choice, choices
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.auth import login
 from django.contrib.sites.shortcuts import get_current_site
-from django.views import generic
+from django.core.mail import EmailMessage
+from django.db.models import BooleanField, OuterRef, Subquery
 from django.db.models.functions import Collate
 from django.http import HttpRequest, JsonResponse
-from django.urls import reverse
-from django.core.mail import EmailMessage
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.views import generic
 
-from random import choice, choices
 from tomikuvzpevnik.forms import SongEditForm
 from tomikuvzpevnik.song_utils.conversions import ultimate_to_base
-from django.db.models import BooleanField, Subquery, OuterRef
-from .models import Song, SongData
+
 from .forms import AddSongForm, UserRegistrationForm
-from django.contrib import messages
+from .models import Song, SongData
 from .tokens import account_activation_token
-from django.contrib import messages
+
+logger = logging.getLogger(__name__)
+
+FAVORITE_WEIGHTING = 10
 
 
 class IndexView(generic.ListView):
@@ -31,33 +36,21 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            favorite_subquery = SongData.objects.filter(
-                user=self.request.user, song=OuterRef("pk"), favorite=True
-            ).values("favorite")[:1]
+            favorite_subquery = SongData.objects.filter(user=self.request.user, song=OuterRef("pk"), favorite=True).values("favorite")[:1]
 
             # Add the information about being favorite
-            songs = (
-                Song.objects.select_related("owner")
-                .only("title", "artist", "owner__username")
-                .annotate(
-                    favorite=Subquery(favorite_subquery, output_field=BooleanField())
-                )
-            )
+            songs = Song.objects.select_related("owner").only("title", "artist", "owner__username").annotate(favorite=Subquery(favorite_subquery, output_field=BooleanField()))
         else:
             # Fetch all songs from the database
-            songs = (
-                Song.objects.select_related("owner")
-                .only("title", "artist", "owner__username")
-                .all()
-            )
+            songs = Song.objects.select_related("owner").only("title", "artist", "owner__username").all()
         # Sort songs using locale-aware sorting
         sort_by = self.request.GET.get("sort", "name")
-        ascending = not self.request.GET.get("order", "1") == "-1"
+        ascending = self.request.GET.get("order", "1") != "-1"
 
         if sort_by in ["created", "last_modified"]:
             prefix = "" if ascending else "-"
             songs = songs.order_by(prefix + sort_by)
-        else:   
+        else:
             songs = songs.order_by(Collate("title", "CZECH_NOCASE"))
         return songs
 
@@ -69,14 +62,9 @@ class SongPageView(generic.DetailView):
 
     def get_queryset(self):
         song_fields = [f.name for f in Song._meta.get_fields()]
-        return (
-            Song.objects.select_related("owner")
-            .only(*song_fields, "owner__username")
-            .all()
-        )
+        return Song.objects.select_related("owner").only(*song_fields, "owner__username").all()
 
     def get_object(self, queryset=None):
-        self.pk_url_kwarg
         self.song = super().get_object(queryset)
         return self.song
 
@@ -102,7 +90,6 @@ def get_random_song(request: HttpRequest):
     rng_mode = request.GET.get("rng_mode", "0")
     random_pk = None
     if request.user.is_authenticated and rng_mode == "1":
-        FAVORITE_WEIGHTING = 10
         favorites = SongData.objects.filter(user=request.user, favorite=True)
         pks = Song.objects.values_list("pk", flat=True)
         if len(favorites) > 0:
@@ -148,26 +135,21 @@ def add_song(request: HttpRequest):
 @login_required
 def update_song_data(request: HttpRequest, pk: int):
     if (
-        request.method == "POST"
-        and request.headers.get("x-requested-with") == "XMLHttpRequest"  # is AJAX
+        request.method == "POST" and request.headers.get("x-requested-with") == "XMLHttpRequest"  # is AJAX
     ):
         song = get_object_or_404(Song, id=pk)
         song_data, _ = SongData.objects.get_or_create(user=request.user, song=song)
 
         # Parse AJAX request values
-        if "favorite" not in request.POST.keys():
+        if "favorite" not in request.POST:
             return JsonResponse({"success": False}, status=400)
 
         favorite_value = request.POST.get("favorite") == "true"
 
-        # song_data.rating = int(rating_value)
         song_data.favorite = favorite_value
         song_data.save()
-        print(song_data.favorite)
-        song_data_dict = {
-            f.name: str(song_data.__getattribute__(f.name))
-            for f in song_data._meta.get_fields()
-        }
+        logger.debug(f"Song favorite status updated: {song_data.favorite}")
+        song_data_dict = {f.name: str(song_data.__getattribute__(f.name)) for f in song_data._meta.get_fields()}
 
         # Return JSON response with current song_data values
         return JsonResponse({"success": True} | song_data_dict)
@@ -186,9 +168,7 @@ def edit_song(request: HttpRequest, pk: int):
         song = get_object_or_404(Song, id=pk)
 
     if not song.isEditable(request.user):
-        return redirect(
-            reverse("tomikuvzpevnik:song_page", args=(pk,))
-        )  # Redirect if not authorized
+        return redirect(reverse("tomikuvzpevnik:song_page", args=(pk,)))  # Redirect if not authorized
 
     if request.method == "POST":
         form = SongEditForm(request.POST, instance=song)
@@ -205,19 +185,16 @@ def edit_song(request: HttpRequest, pk: int):
 def delete_song(request: HttpRequest, pk: int):
     song = get_object_or_404(Song, id=pk)
 
-    if (
-        song.owner != request.user
-        and not request.user.groups.filter(name="Song Admins").exists()
-    ):
+    if song.owner != request.user and not request.user.groups.filter(name="Song Admins").exists():
         messages.error(request, "Nemáte oprávnění smazat tuto píseň.")
-        return redirect(
-            reverse("tomikuvzpevnik:song_edit", args=(pk,))
-        )  # Redirect if not authorized
+        return redirect(reverse("tomikuvzpevnik:song_edit", args=(pk,)))  # Redirect if not authorized
 
     if request.method == "POST":
         song.delete()
         messages.success(request, "Píseň byla úspěšně smazána.")
         return redirect(reverse("tomikuvzpevnik:index"))
+
+    return redirect(reverse("tomikuvzpevnik:song_page", args=(pk,)))
 
 
 def register(request: HttpRequest):
@@ -225,49 +202,50 @@ def register(request: HttpRequest):
         messages.info(request, "You are already logged in.")
         return redirect("login")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             # Save the user with is_active=False initially
             user = form.save(commit=False)
-            user.is_active = False # Account is inactive until email is verified
+            user.is_active = False  # Account is inactive until email is verified
             user.save()
 
-            mail_subject = 'Tomíkův Zpěvník: aktivace účtu'
+            mail_subject = "Tomíkův Zpěvník: aktivace účtu"
             current_site = get_current_site(request)
-            to_email = form.cleaned_data.get('email')
+            to_email = form.cleaned_data.get("email")
             try:
-                message = render_to_string("registration/account_activation_email.html", {
-                    'user': user,
-                    'domain': current_site.domain,
-                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                    'token': account_activation_token.make_token(user),
-                })
-                email = EmailMessage(
-                    mail_subject, message, to=[to_email]
+                message = render_to_string(
+                    "registration/account_activation_email.html",
+                    {
+                        "user": user,
+                        "domain": current_site.domain,
+                        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                        "token": account_activation_token.make_token(user),
+                    },
                 )
+                email = EmailMessage(mail_subject, message, to=[to_email])
                 email.content_subtype = "html"
                 email.send()
                 messages.success(request, "Odkaz pro aktivaci účtu byl odeslán na váš email. Pro aktivaci účtu klikněte na odkaz v emailu.")
-                return redirect('login') # Redirect to login page after successful registration
+                return redirect("login")  # Redirect to login page after successful registration
             except Exception as e:
                 # If email sending fails, delete the user or mark for review
-                user.delete() # Or set a flag for admin review
+                user.delete()  # Or set a flag for admin review
                 messages.error(request, "Nastala chyba při odesílání emailu. Zkuste to prosím znovu později.")
                 # Log the error for debugging
-                print(f"Failed to send activation email to {to_email}: {e}")
+                logger.exception("Failed to send activation email to %s", to_email)
 
         else:
             messages.error(request, "Chyba při registraci. Zkontrolujte prosím zadané údaje.")
     else:
         form = UserRegistrationForm()
 
-
     return render(request, "registration/create_account.html", {"form": form})
 
+
 def activate_account(request, uidb64, token):
-    """
-    Handles account activation via email link.
+    """Handle account activation via email link.
+
     - Decodes UID and validates token.
     - Activates the user if valid, then logs them in.
     """
@@ -284,4 +262,4 @@ def activate_account(request, uidb64, token):
         return redirect("login")
     else:
         messages.error(request, "Aktivace účtu selhala. Odkaz může být neplatný nebo vypršel.")
-        return redirect('sign_up') # Redirect to registration or an error page
+        return redirect("sign_up")  # Redirect to registration or an error page

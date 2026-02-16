@@ -1,13 +1,15 @@
-from django.db import models
 from django.contrib.auth.models import User
-from tomikuvzpevnik.song_utils.conversions import base_to_html
-from django.utils.html import strip_tags
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 
+from tomikuvzpevnik.song_utils.conversions import base_to_html
+
+MAX_CAPO = 11
 
 def validate_capo(value):
-    if value < 0 or value > 11:
+    if value < 0 or value > MAX_CAPO:
         raise ValidationError(
             _("%(value)s has to be a value between 0 and 11"),
             code="invalid",
@@ -32,18 +34,10 @@ class Song(models.Model):
         return base_to_html(strip_tags(self.lyrics))
 
     def isEditable(self, user: User):
-        return (
-            user.is_authenticated
-            and user == self.owner
-            or user.groups.filter(name="Song Admins").exists()
-        )
+        return user.is_authenticated and (user == self.owner or user.groups.filter(name="Song Admins").exists())
 
     def isFavorite(self, user: User):
-        return (
-            user.is_authenticated
-            and user == self.owner
-            or user.groups.filter(name="Song Admins").exists()
-        )
+        return user.is_authenticated and (user == self.owner or user.groups.filter(name="Song Admins").exists())
 
 
 class SongData(models.Model):

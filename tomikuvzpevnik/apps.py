@@ -1,5 +1,6 @@
-from django.apps import AppConfig
 import locale
+
+from django.apps import AppConfig
 from django.db.backends.signals import connection_created
 
 
@@ -17,7 +18,6 @@ def czech_collation_function(str1, str2):
 
 
 def register_czech_collation(sender, connection, **kwargs):
-    from django.db import connection
 
     # Only register for SQLite connections
     if connection.vendor == "sqlite":
