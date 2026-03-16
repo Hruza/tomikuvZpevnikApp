@@ -38,7 +38,9 @@
     <div id="sidebar-left">
         <div id="sidebar-left_menu">
             <a class="sidebar_button button_with_border" id="close_pdf_menu">Zpět</a>
-            <a class="sidebar_button button_with_border"></a>
+            {% if user.is_authenticated %}
+            <a class="sidebar_button button_with_border" href="{% url 'tomikuvzpevnik:download_tex' %}">Stáhnout TeX</a>
+            {% endif %}
             <a class="sidebar_button button_with_border">
                 Stáhnout zpěvník
                 <br>

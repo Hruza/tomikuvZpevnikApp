@@ -5,70 +5,110 @@ from urllib.parse import urlparse
 import html
 import time
 
-VALID_CHORDS = ["C", "C#","D","D#","E","F", "F#","G","G#","A","B","H","Bb"]
+VALID_CHORDS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "B", "H", "Bb"]
 
-h_converter = {"Bb":"B","B":"H"}
+h_converter = {"Bb": "B", "B": "H"}
 
 CHORD_HTML = '<span class="chord"><span class="innerchord" tone="{0}" type="{1}">{0}{1}</span></span>'
-CHORD_WRORD_HTML = '<span class="chord_word">{0}</span>'
-BR = '<br>'
+CHORD_BLOCK_HTML = '<span class="chord_word">{0}</span>'
+BR = "<br>"
 VERSE_START = '<p class="{0}">'
-VERSE_END = '</p>'
-HIGHLIGHT_HTML = '<i>{0}</i>'
-CHORD_SYMBOL = "*"
-NOT_CHORD = ["bridge","intro","outro","ending"]
+VERSE_END = "</p>"
+HIGHLIGHT_HTML = "<i>{0}</i>"
+CHORUS_SYMBOL = "*"
+NOT_CHORD = ["bridge", "intro", "outro", "ending"]
 
-def split_chord(chord:str,use_h = True):
+
+def split_chord(chord: str, use_h=True):
     chord = chord.strip()
     if chord.strip().lower() in NOT_CHORD:
         return chord, None
     elif len(chord) == 0:
-        return "",""
+        return "", ""
     elif len(chord) == 1:
         chord = chord.upper()
-        return chord if use_h else h_converter.get(chord,chord), ""
+        return chord if use_h else h_converter.get(chord, chord), ""
     else:
         chord = chord[0].upper() + chord[1:]
         if chord[:2] in VALID_CHORDS:
-            return chord[:2] if use_h else h_converter.get(chord[:2],chord[:2]), chord[2:]
+            return chord[:2] if use_h else h_converter.get(chord[:2], chord[:2]), chord[2:]
         else:
-            return chord[:1] if use_h else h_converter.get(chord[:1],chord[:1]), chord[1:]
+            return chord[:1] if use_h else h_converter.get(chord[:1], chord[:1]), chord[1:]
 
 
 def replace_chord(matchobj):
-    chord,chord_type = split_chord(matchobj.group(0).lstrip("[").rstrip("]"))
+    chord, chord_type = split_chord(matchobj.group(0).lstrip("[").rstrip("]"))
     if chord_type is None:
         return HIGHLIGHT_HTML.format(chord)
-    return CHORD_HTML.format(chord,chord_type)
+    return CHORD_HTML.format(chord, chord_type)
 
-def base_to_html(text:str):
+
+def base_to_html(text: str):
     verses = []
     current_verse = []
     for line in text.split("\n"):
         line = line.strip()
         if line == "":
-            if len(current_verse)>0:
+            if len(current_verse) > 0:
                 verse_type = "verse"
-                if current_verse[0]==CHORD_SYMBOL + BR:
+                if current_verse[0] == CHORUS_SYMBOL + BR:
                     verse_type = "chorus"
                     del current_verse[0]
                 verses.append([VERSE_START.format(verse_type)] + current_verse + [VERSE_END])
                 current_verse = []
             continue
 
-        line = re.sub(r"(\S*\[[^:\]][^\]]*\]\S*)",CHORD_WRORD_HTML.format(r"\1"),line)
-        line = re.sub(r"\[[^\]:][^\]]*\]",replace_chord,line)
+        line = re.sub(r"(\S*\[[^:\]][^\]]*\]\S*)", CHORD_BLOCK_HTML.format(r"\1"), line)
+        line = re.sub(r"\[[^\]:][^\]]*\]", replace_chord, line)
         current_verse.append(line + BR)
 
-    if len(current_verse)>0:
+    if len(current_verse) > 0:
         verse_type = "verse"
-        if current_verse[0]==CHORD_SYMBOL + BR:
+        if current_verse[0] == CHORUS_SYMBOL + BR:
             verse_type = "chorus"
             del current_verse[0]
         verses.append([VERSE_START.format(verse_type)] + current_verse + [VERSE_END])
         current_verse = []
 
     return "".join(["".join(verse) for verse in verses])
+
+
+BR_TEX = "\\brk\n"
+
+
+def base_to_tex(text: str, song_title=None, song_artist=None, capo=0):
+    """Analogous to HTML conversion, but for LaTeX."""
+    first_line = f"\\sclearpage\\beginsong{{{song_title}}}[by={{{song_artist}}}]\n\\brk\n\\brk\n"
+
+    verses = [first_line]
+    current_verse = []
+    for line in text.split("\n"):
+        line = line.strip()
+        if line == "":
+            if len(current_verse) > 0:
+                verse_type = "verse"
+                if current_verse[0] == CHORUS_SYMBOL + BR_TEX:
+                    verse_type = "chorus"
+                    del current_verse[0]
+                verses.append([f"\\begin{verse_type}\n"] + current_verse + [f"\\end{verse_type}\n"])
+                current_verse = []
+            continue
+
+        line = re.sub(r"\[([^\]]*)\]", (r"\[\1]"), line)
+        current_verse.append(line + BR_TEX)
+
+    if len(current_verse) > 0:
+        verse_type = "verse"
+        if current_verse[0] == CHORUS_SYMBOL + BR_TEX:
+            verse_type = "chorus"
+            del current_verse[0]
+        verses.append([f"\\begin{verse_type}\n"] + current_verse + [f"\\end{verse_type}\n"])
+        current_verse = []
+
+    verses.append(["\\endsong"])
+
+    return "".join(["".join(verse) for verse in verses])
+
 
 def html_to_base(html_text):
     html_text = html_text.replace("\n","")

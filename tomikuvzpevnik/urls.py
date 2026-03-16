@@ -11,4 +11,5 @@ urlpatterns = [
     path("song/<int:pk>/delete/", views.delete_song, name="song_delete"),
     path("song/add/", views.add_song, name="song_add"),
     path("song/random/", views.get_random_song, name="song_random"),
+    path("download/tex/", views.download_songbook_tex, name="download_tex"),
 ]

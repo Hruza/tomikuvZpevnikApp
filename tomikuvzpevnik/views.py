@@ -8,7 +8,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.db.models import BooleanField, OuterRef, Subquery
 from django.db.models.functions import Collate
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -17,7 +17,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import generic
 
 from tomikuvzpevnik.forms import SongEditForm
-from tomikuvzpevnik.song_utils.conversions import ultimate_to_base
+from tomikuvzpevnik.song_utils.conversions import base_to_tex, ultimate_to_base
 
 from .forms import AddSongForm, UserRegistrationForm
 from .models import Song, SongData
@@ -26,7 +26,6 @@ from .tokens import account_activation_token
 logger = logging.getLogger(__name__)
 
 FAVORITE_WEIGHTING = 10
-
 
 class IndexView(generic.ListView):
     model = Song
@@ -228,7 +227,7 @@ def register(request: HttpRequest):
                 email.send()
                 messages.success(request, "Odkaz pro aktivaci účtu byl odeslán na váš email. Pro aktivaci účtu klikněte na odkaz v emailu.")
                 return redirect("login")  # Redirect to login page after successful registration
-            except Exception as e:
+            except Exception:
                 # If email sending fails, delete the user or mark for review
                 user.delete()  # Or set a flag for admin review
                 messages.error(request, "Nastala chyba při odesílání emailu. Zkuste to prosím znovu později.")
@@ -260,6 +259,20 @@ def activate_account(request, uidb64, token):
         user.save()
         messages.success(request, "Účet byl úspěšně aktivován! Nyní se můžete přihlásit.")
         return redirect("login")
-    else:
-        messages.error(request, "Aktivace účtu selhala. Odkaz může být neplatný nebo vypršel.")
-        return redirect("sign_up")  # Redirect to registration or an error page
+
+    messages.error(request, "Aktivace účtu selhala. Odkaz může být neplatný nebo vypršel.")
+    return redirect("sign_up")  # Redirect to registration or an error page
+
+
+@login_required
+def download_songbook_tex(request: HttpRequest):
+    """Return a LaTeX source file containing all songs in the database. Only accessible to users in the "Song Admins" group."""
+    if not request.user.groups.filter(name="Song Admins").exists():
+        messages.error(request, "Nemáte oprávnění stáhnout zdrojový kód zpěvníku.")
+        return redirect(reverse("tomikuvzpevnik:index"))  # Redirect if not authorized
+
+    songs = Song.objects.all()
+    tex_content = [base_to_tex(song.lyrics, song.title, song.artist, song.capo) for song in songs]
+    response = HttpResponse("".join(tex_content), content_type="text/plain")
+    response["Content-Disposition"] = "attachment; filename=songbook.tex"
+    return response
