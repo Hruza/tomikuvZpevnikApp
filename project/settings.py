@@ -174,6 +174,9 @@ STATIC_ROOT = "/var/www/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+log_dir = BASE_DIR / "logs"
+log_dir.mkdir(parents=True, exist_ok=True)
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -192,6 +195,14 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
+        "file": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": BASE_DIR / "logs" / "tomikuvzpevnik.log",
+            "formatter": "verbose",
+            "when": "midnight",
+            "interval": 1,
+            "backupCount": 30,
+        },
     },
     "root": {
         "handlers": ["console"],
@@ -200,6 +211,11 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "tomikuvzpevnik": {
+            "handlers": ["console", "file"],
             "level": "INFO",
             "propagate": False,
         },

@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
+from django.db import transaction
 from django.db.models import BooleanField, OuterRef, Subquery
 from django.db.models.functions import Collate
 from django.http import HttpRequest, HttpResponse, JsonResponse
@@ -23,9 +24,10 @@ from .forms import AddSongForm, UserRegistrationForm
 from .models import Song, SongData
 from .tokens import account_activation_token
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("tomikuvzpevnik")
 
 FAVORITE_WEIGHTING = 10
+
 
 class IndexView(generic.ListView):
     model = Song
@@ -72,7 +74,7 @@ class SongPageView(generic.DetailView):
         song = self.song
         user = self.request.user
         context["editable"] = song.isEditable(user)
-
+        logger.info("User %s accessed song page for '%s' (ID: %s). Editable: %s", user.username or "(Anonymous)", song.title, song.pk, context["editable"])
         song_data = None
         if user.is_authenticated:
             song_data = SongData.objects.filter(user=user, song=song).first()
@@ -118,8 +120,10 @@ def add_song(request: HttpRequest):
             # check whether it's valid:
             if form.cleaned_data["song_url"].strip() == "":
                 request.session["unsaved_song_data"] = {}
+                logger.info("User %s submitted empty song URL for adding a new song.", request.user.username or "(Anonymous)")
                 return redirect(reverse("tomikuvzpevnik:song_edit", args=(0,)))
             song_data = ultimate_to_base(form.cleaned_data["song_url"])
+            logger.info("User %s submitted a song URL for adding a new song. URL: %s", request.user.username or "(Anonymous)", form.cleaned_data["song_url"])
             if song_data is not None:
                 request.session["unsaved_song_data"] = song_data
                 return redirect(reverse("tomikuvzpevnik:song_edit", args=(0,)))
@@ -133,9 +137,7 @@ def add_song(request: HttpRequest):
 
 @login_required
 def update_song_data(request: HttpRequest, pk: int):
-    if (
-        request.method == "POST" and request.headers.get("x-requested-with") == "XMLHttpRequest"  # is AJAX
-    ):
+    if request.method == "POST" and request.headers.get("x-requested-with") == "XMLHttpRequest":  # is AJAX
         song = get_object_or_404(Song, id=pk)
         song_data, _ = SongData.objects.get_or_create(user=request.user, song=song)
 
@@ -147,7 +149,7 @@ def update_song_data(request: HttpRequest, pk: int):
 
         song_data.favorite = favorite_value
         song_data.save()
-        logger.debug(f"Song favorite status updated: {song_data.favorite}")
+        logger.debug("Song favorite status updated: User: %s, Song: %s (ID: %s), Favorite: %s", request.user.username or "(Anonymous)", song.title, song.pk, song_data.favorite)
         song_data_dict = {f.name: str(song_data.__getattribute__(f.name)) for f in song_data._meta.get_fields()}
 
         # Return JSON response with current song_data values
@@ -161,18 +163,21 @@ def edit_song(request: HttpRequest, pk: int):
     if pk == 0:
         song_data = request.session.get("unsaved_song_data", None)
         if song_data is None:
+            logger.warning("User %s attempted to edit a new song without providing song data in the session.", request.user.username or "(Anonymous)")
             return redirect(reverse("tomikuvzpevnik:index"))
         song = Song(**song_data, owner=request.user)
     else:
         song = get_object_or_404(Song, id=pk)
 
     if not song.isEditable(request.user):
+        logger.warning("Unauthorized attempt to edit song: User: %s, Song: %s (ID: %s)", request.user.username or "(Anonymous)", song.title, song.pk)
         return redirect(reverse("tomikuvzpevnik:song_page", args=(pk,)))  # Redirect if not authorized
 
     if request.method == "POST":
         form = SongEditForm(request.POST, instance=song)
         if form.is_valid():
             new_song = form.save()
+            logger.info("Song saved: User: %s, Song: %s (ID: %s)", request.user.username or "(Anonymous)", new_song.title, new_song.pk)
             return redirect(reverse("tomikuvzpevnik:song_page", args=(new_song.pk,)))
     else:
         form = SongEditForm(instance=song)
@@ -191,6 +196,7 @@ def delete_song(request: HttpRequest, pk: int):
     if request.method == "POST":
         song.delete()
         messages.success(request, "Píseň byla úspěšně smazána.")
+        logger.info("Song deleted: User: %s, Song: %s (ID: %s)", request.user.username or "(Anonymous)", song.title, song.pk)
         return redirect(reverse("tomikuvzpevnik:index"))
 
     return redirect(reverse("tomikuvzpevnik:song_page", args=(pk,)))
@@ -204,32 +210,44 @@ def register(request: HttpRequest):
     if request.method == "POST":
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            # Save the user with is_active=False initially
-            user = form.save(commit=False)
-            user.is_active = False  # Account is inactive until email is verified
-            user.save()
-
-            mail_subject = "Tomíkův Zpěvník: aktivace účtu"
-            current_site = get_current_site(request)
-            to_email = form.cleaned_data.get("email")
             try:
-                message = render_to_string(
-                    "registration/account_activation_email.html",
-                    {
-                        "user": user,
-                        "domain": current_site.domain,
-                        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                        "token": account_activation_token.make_token(user),
-                    },
-                )
-                email = EmailMessage(mail_subject, message, to=[to_email])
-                email.content_subtype = "html"
-                email.send()
+                with transaction.atomic():
+                    # Save the user with is_active=False initially
+                    user = form.save(commit=False)
+                    user.is_active = False  # Account is inactive until email is verified
+
+                    # Check if the email is already used by another account
+                    if User.objects.filter(email=user.email).exists():
+                        messages.error(request, "Tento email již je používán jiným účtem.")
+                        return render(request, "registration/create_account.html", {"form": form})
+
+                    # Check if a user with the same name already exists
+                    if User.objects.filter(username=user.username).exists():
+                        messages.error(request, "Tento uživatelské jméno již je používáno jiným účtem.")
+                        return render(request, "registration/create_account.html", {"form": form})
+
+                    user.save()
+
+                    mail_subject = "Tomíkův Zpěvník: aktivace účtu"
+                    current_site = get_current_site(request)
+                    to_email = form.cleaned_data.get("email")
+                    message = render_to_string(
+                        "registration/account_activation_email.html",
+                        {
+                            "user": user,
+                            "domain": current_site.domain,
+                            "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                            "token": account_activation_token.make_token(user),
+                        },
+                    )
+                    email = EmailMessage(mail_subject, message, to=[to_email])
+                    email.content_subtype = "html"
+                    email.send()
                 messages.success(request, "Odkaz pro aktivaci účtu byl odeslán na váš email. Pro aktivaci účtu klikněte na odkaz v emailu.")
+                logger.info("New user registered: %s (ID: %s). Activation email sent to %s.", user.username, user.pk, to_email)
                 return redirect("login")  # Redirect to login page after successful registration
             except Exception:
-                # If email sending fails, delete the user or mark for review
-                user.delete()  # Or set a flag for admin review
+                # If email sending fails, the transaction rolls back, so user is not created
                 messages.error(request, "Nastala chyba při odesílání emailu. Zkuste to prosím znovu později.")
                 # Log the error for debugging
                 logger.exception("Failed to send activation email to %s", to_email)
@@ -254,14 +272,20 @@ def activate_account(request, uidb64, token):
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-        messages.success(request, "Účet byl úspěšně aktivován! Nyní se můžete přihlásit.")
-        return redirect("login")
+    if user is None:
+        messages.error(request, "Aktivace účtu selhala. Odkaz může být neplatný nebo vypršel.")
+        logger.warning("Account activation failed - invalid UID: %s", uidb64)
+        return redirect("sign_up")  # Redirect to registration or an error page
+    if not account_activation_token.check_token(user, token):
+        messages.error(request, "Aktivace účtu selhala. Odkaz může být neplatný nebo vypršel.")
+        logger.warning("Failed to activate user account - invalid token for user: %s (ID: %s)", user.username or "(Anonymous)", user.pk)
+        return redirect("sign_up")  # Redirect to registration or an error page
 
-    messages.error(request, "Aktivace účtu selhala. Odkaz může být neplatný nebo vypršel.")
-    return redirect("sign_up")  # Redirect to registration or an error page
+    user.is_active = True
+    user.save()
+    messages.success(request, "Účet byl úspěšně aktivován! Nyní se můžete přihlásit.")
+    logger.info("User account activated: %s (ID: %s)", user.username or "(Anonymous)", user.pk)
+    return redirect("login")
 
 
 @login_required
@@ -269,6 +293,7 @@ def download_songbook_tex(request: HttpRequest):
     """Return a LaTeX source file containing all songs in the database. Only accessible to users in the "Song Admins" group."""
     if not request.user.groups.filter(name="Song Admins").exists():
         messages.error(request, "Nemáte oprávnění stáhnout zdrojový kód zpěvníku.")
+        logger.warning("Unauthorized attempt to download songbook LaTeX by user: %s (ID: %s)", request.user.username or "(Anonymous)", request.user.pk)
         return redirect(reverse("tomikuvzpevnik:index"))  # Redirect if not authorized
 
     songs = Song.objects.all()

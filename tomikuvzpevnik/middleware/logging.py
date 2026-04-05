@@ -1,5 +1,7 @@
 import time
+from logging import getLogger
 
+logger = getLogger("tomikuvzpevnik")
 
 def log_request(request, processing_time, view_time=None, render_time=None):
     additional_msg = []
@@ -9,9 +11,7 @@ def log_request(request, processing_time, view_time=None, render_time=None):
         additional_msg.append(f"{render_time*1000:.2f}ms to render view")
 
     additional_msg = f" ({' '.join(additional_msg)})" if len(additional_msg) > 0 else ""
-    print(
-        f"Request to {request.path} took {processing_time*1000:.2f}ms{additional_msg}."
-    )
+    logger.info(f"Request to {request.path} took {processing_time * 1000:.2f}ms{additional_msg}.")
 
 
 class Timing:
