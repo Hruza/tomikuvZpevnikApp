@@ -4,9 +4,10 @@ services:
     build: .
     platform: linux/arm64
     volumes:
-      - sqlite_data:/tomikuvzpevnik/sqlite_data
+      - ./sqlite_data/:/tomikuvzpevnik/sqlite_data/
       - /var/www/static/:/var/www/static/
-      - /var/certbot/conf:/etc/letsencrypt/:ro
+      - ./configs:/tomikuvzpevnik/configs
+      - ./logs/:/tomikuvzpevnik/logs/
     expose: 
       - "8000"
     image: hruza/tomikuvzpevnik:rpi
