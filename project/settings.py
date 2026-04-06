@@ -42,6 +42,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "tomikuvzpevnik.apps.TomikuvzpevnikConfig",
+    "cleanup",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
