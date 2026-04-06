@@ -100,12 +100,8 @@ WSGI_APPLICATION = "project.wsgi.application"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.eu.mailgun.org"  # e.g., smtp.sendgrid.net, smtp.mailgun.org
-EMAIL_PORT = 2525   # or 465, depending on your ESP's recommendation (587 is common with TLS)
-EMAIL_USE_TLS = True  # Use TLS for secure connection (often required on port 587)
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER = "accounts@mail.tomikuvzpevnik.cz"  # Provided by your ESP (often 'apikey' or your actual username)
+EMAIL_BACKEND = "project.mailgun.MailgunBackend"
+EMAIL_HOST_USER = "mail.tomikuvzpevnik.cz"  # Provided by your ESP (often 'apikey' or your actual username)
 EMAIL_HOST_PASSWORD = configs["mailgun"]  # Provided by your ESP (API key is common)
 DEFAULT_FROM_EMAIL = "noreply@mail.tomikuvzpevnik.cz"  # The email address your emails will appear to come from
 
@@ -126,7 +122,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "sqlite_data" / "db.sqlite3",
-    }
+    },
 }
 
 
