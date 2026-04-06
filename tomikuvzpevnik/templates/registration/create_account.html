@@ -29,7 +29,7 @@
             {% endif %}
           </div>
         {% endfor %}
-        <button type="submit" class="form-button">
+        <button type="submit" class="submit-btn" onclick="this.disabled=true; this.textContent='Vytváření účtu...'; this.form.submit();">
           {# Uses the .form-button class #}
           Vytvořit účet
         </button>

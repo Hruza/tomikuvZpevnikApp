@@ -25,7 +25,7 @@
         {% endif %}
       </div>
     {% endfor %}
-    <button type="submit">Přihlásit</button>
+    <button type="submit" class="submit-btn" onclick="this.disabled=true; this.textContent='Přihlašování...'; this.form.submit();">Přihlásit</button>
     <p class="form-link-text">
       Nemáš účet? <a href="{% url 'sign_up' %}" class="form-link">Registruj se zde.</a>
     </p>
