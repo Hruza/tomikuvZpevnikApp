@@ -201,7 +201,7 @@ def ultimate_to_base(url):
         elif line.startswith("[tab]"):
             # Line contains chords for the next line
             line = line.removeprefix("[tab]")
-            chords = re.findall("([ ]*)\[ch\]([^\[]*)\[/ch\]",line)
+            chords = re.findall(r"([ ]*)\[ch\]([^\[]*)\[/ch\]", line)
             chords = [(len(spaces),chord) for spaces,chord in chords]
         elif line == "":
             pass
