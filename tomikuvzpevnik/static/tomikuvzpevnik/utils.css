@@ -1,223 +1,228 @@
 :root {
-    --text1: rgb(0, 0, 0);
-    --text2: rgb(76, 76, 76);
-    --text3: rgb(116, 116, 116);
-    --text4: rgb(181, 181, 181);
-    --background0: rgb(255, 255, 255);
-    --background1: rgb(255, 255, 255);
-    --background2: rgb(221, 221, 223);
-    --accent1: rgb(136, 136, 136);
-    --accent2: #0a94bf;
-    --accent3: rgb(166, 166, 166);
-    --error: rgb(139, 7, 7);
+  --text1: rgb(0, 0, 0);
+  --text2: rgb(76, 76, 76);
+  --text3: rgb(116, 116, 116);
+  --text4: rgb(181, 181, 181);
+  --background0: rgb(250, 250, 250);
+  --background1: rgb(250, 250, 250);
+  --background2: rgb(210, 210, 210);
+  --accent1: rgb(136, 136, 136);
+  --accent2: #0a94bf;
+  --accent3: rgb(166, 166, 166);
+  --error: rgb(139, 7, 7);
 }
 
 body {
-    background-color: var(--background0);
-    color: var(--text1);
-    margin: 0;
+  background-color: var(--background0);
+  color: var(--text1);
+  margin: 0;
 }
 
 .header {
-    overflow: hidden;
-    display: flex;
-    justify-content: space-between;
-    overflow-x: overlay;
-    position: fixed;
-    top: 0;
-    right: 0;
-    left:0;
-    height: 55px;
-    z-index: 10;
-    padding: 10px 10px 5px 10px;
-    background-color: var(--background0);
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  overflow-x: overlay;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 55px;
+  z-index: 10;
+  padding: 10px 10px 5px 10px;
+  background-color: var(--background0);
 }
 
 .content {
-    padding-top: 70px; 
+  padding-top: 60px;
 }
 
 .header .header-left {
-    display: flex;
-    justify-self: left;
+  display: flex;
+  justify-self: left;
 }
 
 .header .header-right {
-    display: flex;
-    justify-self: right;
+  display: flex;
+  justify-self: right;
 }
 
 .header .header-center {
-    display: flex;
-    justify-self: center;
+  display: flex;
+  justify-self: center;
 }
 
 .button_with_border {
-    transition-duration: 0.4s;
-    background-color: var(--background1);
-    color: var(--text2);
-    border-radius: 2px;
-    border: 2px solid var(--accent1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  transition-duration: 0.4s;
+  background-color: var(--background1);
+  color: var(--text2);
+  border-radius: 2px;
+  border: 2px solid var(--accent1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .button_with_border:hover {
-    background-color: var(--background2);
-    /* Green */
-    color: var(--text1);
+  background-color: var(--background2);
+  /* Green */
+  color: var(--text1);
 }
 
 .button_no_border {
-    text-align: center;
-    transition-duration: 0.4s;
-    background-color: var(--background1);
-    border-radius: 8px;
-    border-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  text-align: center;
+  transition-duration: 0.4s;
+  background-color: var(--background1);
+  border-radius: 8px;
+  border-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .button_no_border:hover {
-    background-color: var(--background2);
-    /* Green */
-    color: var(--text1);
+  background-color: var(--background2);
+  /* Green */
+  color: var(--text1);
 }
 
-#popup {}
+#popup {
+}
 
 a {
-    text-decoration: none;
-    color: var(--text1);
+  text-decoration: none;
+  color: var(--text1);
 }
 
 .square_medium {
-    width: 55px;
-    height: 55px;
-    display: flex;
+  width: 55px;
+  height: 55px;
+  display: flex;
 }
 
 /* return button */
 
 #return {
-    text-decoration: none;
-    display: inline-block;
-    color: var(--text1);
-    text-align: center;
-    font-size: 30px;
-    width: 80px;
-    height: 55px;
-    transition: all 0.5s;
-    cursor: pointer;
-    position: relative;
+  text-decoration: none;
+  display: inline-block;
+  color: var(--text1);
+  text-align: center;
+  font-size: 30px;
+  width: 80px;
+  height: 55px;
+  transition: all 0.5s;
+  cursor: pointer;
+  position: relative;
 }
 
 #return span {
-    cursor: pointer;
-    display: inline-block;
-    transition: 0.5s;
+  cursor: pointer;
+  display: inline-block;
+  transition: 0.5s;
 }
 
 #return:after {
-    content: 'Index';
-    position: absolute;
-    opacity: 0;
-    top: 17px;
-    font-size: 20px;
-    right: 0px;
-    transition: 0.5s;
+  content: "Index";
+  position: absolute;
+  opacity: 0;
+  top: 17px;
+  font-size: 20px;
+  right: 0px;
+  transition: 0.5s;
 }
 
 #return:hover span {
-    margin-right: 35px;
-    opacity: 0;
+  margin-right: 35px;
+  opacity: 0;
 }
 
 #return:hover:after {
-    opacity: 1;
-    right: 20px;
+  opacity: 1;
+  right: 20px;
 }
 
 .content {
-    text-align: center;
+  text-align: center;
 }
 
 /* Messages */
 .message-container {
-    position: fixed;
-    top: 65px;
-    left: 0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 999;
-    padding: 0.5rem 1rem;
-    box-sizing: border-box;
+  position: fixed;
+  top: 65px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 999;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
 }
 
 .message-item {
-    width: 100%;
-    max-width: 600px;
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
-    border-radius: 0.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.95rem;
-    font-weight: 500;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-    opacity: 1;
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-    transform: translateY(0);
+  width: 100%;
+  max-width: 600px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.06);
+  opacity: 1;
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.5s ease-out;
+  transform: translateY(0);
 }
 
 .message-item.fade-out {
-    opacity: 0;
-    transform: translateY(-20px);
+  opacity: 0;
+  transform: translateY(-20px);
 }
 
 /* Specific styles for different message types */
 .message-item.success {
-    background-color: #d1fae5;
-    color: #065f46;
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
 .message-item.info {
-    background-color: #dbeafe;
-    color: #1e40af;
+  background-color: #dbeafe;
+  color: #1e40af;
 }
 
 .message-item.warning {
-    background-color: #fef3c7;
-    color: #92400e;
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
 .message-item.error {
-    background-color: #fee2e2;
-    color: #991b1b;
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
 .close-button {
-    background: none;
-    border: none;
-    color: inherit;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 0 0.25rem;
-    line-height: 1;
-    opacity: 0.7;
-    transition: opacity 0.2s ease-in-out;
-    border-radius: 9999px;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.2s ease-in-out;
+  border-radius: 9999px;
 }
 
 .close-button:hover {
-    opacity: 1;
-    background-color: rgba(0, 0, 0, 0.1);
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
 }

@@ -31,20 +31,63 @@
   </div>
 {% endblock header %}
 {% block content %}
-  <h2 style="text-align:center">Tomíkův zpěvník</h2>
-  <h3 style="text-align:center">&#127925; Edituj písničku &#127925;</h3>
+  <h3 style="text-align:center;margin-top:10px;">Edituj písničku</h3>
   <form action="" method="post">
     {% csrf_token %}
     {% if form.errors %}<div id="err_list">{{ form.errors }}</div>{% endif %}
     <div class="form">
       {% for field in form %}
-        <div class="input_field"
-             id="form_{{ field.name }}"
-             {% if field.errors %}style="background-color:#ffaaaa;border-radius:5px;"{% endif %}>
-          {{ field.label_tag }} {{ field }}
-        </div>
+        {% if field.name == 'lyrics' %}
+          <div class="input_field"
+               id="form_{{ field.name }}"
+               {% if field.errors %}style="background-color:#ffaaaa;border-radius:5px;"{% endif %}>
+            <div class="field-header">
+              {{ field.label_tag }}
+              <div class="help-icon" onclick="toggleHelp()">?</div>
+            </div>
+            <div id="lyrics-help-container" class="help-container">
+            <div id="lyrics-help-content" class="help-content">
+              <p>
+                Použij <span class="help-example-inline">[Akord]</span> pro označení akordů v textu, např. <span class="help-example-inline">[Dm]</span> pro akord <b>Dm</b>.
+              </p>
+              <p>
+                Sloky odděluj prázdným řádkem. Pro označení refrénu přidej prázdný řádek s <span class="help-example-inline">*</span> na začátek sloky.
+              </p>
+              Příklad (Drobná paralela od Chinaski): <i>První sloka je standardní, druhá sloka je refrén.</i>
+              <p class="help-example">
+                Ta [C]stará [G]dobrá hra je [D]okoukaná.</br>
+                [C]Nediv se [G]brácho, kdekdo ji [D]zná.</br>
+                [C]Přestaň se ptát, [G]bylo nebylo lí[D]p.</br>
+                [C]Včera je vče[G]ra, bohužel bohu dí[D]k.</br>
+                </br>
+                *</br>
+                [C]Nic není jako d[G]řív, [D]nic není jak [Em]bejvávalo.</br>
+                [C]Nic není jako d[G]řív,[D] to se nám to [Em]mívávalo.</br>
+                [C]Nic není jako d[G]řív, [D]ačkoliv máš všechno,</br>
+                [Em]co si vždycky chtěla</br>
+                [C]Nic není jako d[G]řív,[D] ačkoliv drobná para[Em]lela by tu byla.</br>
+              </p>
+            </div>
+          </div>
+          <div class="lyrics_container">
+            {{ field }}
+          </div>
+          </div>
+        {% else %}
+          <div class="input_field"
+               id="form_{{ field.name }}"
+               {% if field.errors %}style="background-color:#ffaaaa;border-radius:5px;"{% endif %}>
+            {{ field.label_tag }} {{ field }}
+          </div>
+        {% endif %}
       {% endfor %}
       <input type="submit" class="button_with_border" value="Edituj!" />
     </div>
   </form>
+  <script>
+    function toggleHelp() {
+      var el = document.getElementById('lyrics-help-container');
+      el.classList.toggle('open');
+    }
+  </script>
 {% endblock content %}

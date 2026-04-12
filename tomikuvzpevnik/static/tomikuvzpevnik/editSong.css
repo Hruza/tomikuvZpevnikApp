@@ -1,105 +1,157 @@
-
-.form{
-    display: grid;
-    grid-template:
-        "title" 55px 
-        "artist" 55px
-        "capo" 55px
-        "song_text" auto
-        "edit" 55px;
-    height: -moz-calc(100vh - 120px);
-    height: -webkit-calc(100vh - 120px);
-    height: -o-calc(100vh - 120px);
-    height: calc(100vh - 120px);
+.form {
+  display: grid;
+  grid-template:
+    "title" 55px
+    "artist" 55px
+    "capo" 55px
+    "song_text" auto
+    "edit" 55px;
+  height: calc(100vh - 120px);
+  margin: 0 auto;
 }
 
 @media (min-width: 600px) {
-.form {
-    display: grid;
+  .form {
     grid-template:
-        "title title" 55px
-        "artist capo" 55px
-        "song_text song_text" auto
-        "edit edit" 55px;
+      "title title" 55px
+      "artist capo" 55px
+      "song_text song_text" auto
+      "edit edit" 55px;
     grid-template-columns: 3fr 1fr;
     max-width: 800px;
     column-gap: 20px;
- 
-}
-
-form {
-    display: grid;
-    justify-content: space-around;
-}
+  }
 }
 
 .input_field {
-    padding: 5px;
+  padding: 5px;
+  display: block;
 }
 
-label{
-    color:var(--text2);
-    font:Arial bold;
+label {
+  color: var(--text2);
+  font: Arial bold;
+  text-align: left;
+  display: block;
+}
+
+.input_field input,
+.input_field textarea {
+  border-radius: 2px;
+  border: 2px solid var(--accent1);
+  padding: 5px;
 }
 
 .input_field input {
-    border-radius: 2px;
-    border: 2px solid var(--accent1);
-    width: -moz-calc(100% - 14px);
-    width: -webkit-calc(100% - 14px);
-    width: -o-calc(100% - 14px);
-    width: calc(100% - 14px);
-    padding: 5px;
+  width: calc(100% - 14px);
 }
 
 .input_field textarea {
-    border-radius: 2px;
-    border: 2px solid var(--accent1);
-    display: block;
-    width: -moz-calc(100% - 8px);
-    width: -webkit-calc(100% - 8px);
-    width: -o-calc(100% - 8px);
-    width: calc(100% - 8px);
-    height: -moz-calc(100% - 22px);
-    height: -webkit-calc(100% - 22px);
-    height: -o-calc(100% - 22px);
-    height: calc(100% - 22px);
-    resize: none;
+  display: block;
+  width: calc(100% - 14px);
+  height: calc(100% - 22px);
+  resize: none;
 }
 
-#err_list{
-    color:#ff2222
+#err_list {
+  color: #ff2222;
 }
 
 #form_title {
-    grid-area: title;
-}
-
-#form_owner {
-    grid-area: owner;
+  grid-area: title;
 }
 
 #form_artist {
-    grid-area: artist;
+  grid-area: artist;
 }
 
 #form_capo {
-    grid-area: capo;
+  grid-area: capo;
 }
 
 #form_lyrics {
-    grid-area: song_text;
+  grid-area: song_text;
 }
 
 #form_lyrics label {
-    display: block;
+  display: initial;
 }
 
-input.button_with_border{
-    grid-area:edit;
-    border-radius: 2px;
-    width: auto;
-    padding: 5px;
-    margin:5px;
+input.button_with_border {
+  grid-area: edit;
+  border-radius: 2px;
+  width: auto;
+  padding: 5px;
+  margin: 5px;
 }
 
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.help-icon {
+  cursor: pointer;
+  background: var(--accent1);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.help-container {
+  max-height: 0;
+  transition: max-height 0.3s ease-out;
+  overflow: hidden;
+}
+
+.help-content {
+  margin: 10px 5px 10px 5px;
+  text-align: left;
+  background: var(--background2);
+  padding: 5px 20px 5px 20px;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px 0px var(--text2);
+}
+
+.help-container.open {
+  max-height: 600px;
+}
+
+.help-example {
+  margin-left: 15px;
+  margin-right: 15px;
+  background: var(--background1);
+  padding: 5px;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px 0px var(--text2) inset;
+  font-family: monospace;
+}
+
+.help-example-inline {
+  background: var(--background1);
+  padding: 3px;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px 0px var(--text2) inset;
+  font-family: monospace;
+  position: relative;
+  bottom: 1px;
+}
+
+#form_lyrics{
+  display:flex;
+  flex-direction: column;
+}
+
+.lyrics_container{
+  flex:auto;
+  min-height: 200px;
+}
