@@ -19,10 +19,11 @@ function transpose(dir) {
     const chord = chords[i];
     tone = chord.getAttribute("tone");
     type = chord.getAttribute("type");
-    index = notes.indexOf(tone);
-    tone = notes[(index + trans + 12) % 12];
-
-    chord.innerHTML = tone + type;
+    if (notes.includes(tone)) {
+      index = notes.indexOf(tone);
+      tone = notes[(index + trans + 12) % 12];
+      chord.innerHTML = tone + type;
+    }
   }
   calibrateChords();
 }
