@@ -69,6 +69,12 @@
     margin-bottom: 20px;
 }
 
+.comment {
+    font-style: italic;
+    color: var(--text2);
+    font-family: serif;
+}
+
 .chorus {
     border-left: 3px solid var(--text1);
 }

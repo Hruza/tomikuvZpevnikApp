@@ -11,6 +11,7 @@ h_converter = {"Bb": "B", "B": "H"}
 
 CHORD_HTML = '<span class="chord"><span class="innerchord" tone="{0}" type="{1}">{0}{1}</span></span>'
 CHORD_BLOCK_HTML = '<span class="chord_word">{0}</span>'
+COMMENT_BLOCK_HTML = '<span class="comment">{0}</span>'
 BR = "<br>"
 VERSE_START = '<p class="{0}">'
 VERSE_END = "</p>"
@@ -60,6 +61,7 @@ def base_to_html(text: str):
 
         line = re.sub(r"(\S*\[[^:\]][^\]]*\]\S*)", CHORD_BLOCK_HTML.format(r"\1"), line)
         line = re.sub(r"\[[^\]:][^\]]*\]", replace_chord, line)
+        line = re.sub(r"\{([^\{][^\}]*)\}", COMMENT_BLOCK_HTML.format(r"\1"), line)
         current_verse.append(line + BR)
 
     if len(current_verse) > 0:
