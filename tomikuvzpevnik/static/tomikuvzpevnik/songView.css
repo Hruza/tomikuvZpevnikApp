@@ -160,8 +160,12 @@
     background-color: var(--background0);
     top: 0;
     right: 0;
-    z-index: -1;
+    z-index: 1;
     transition: 0.2s cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+.header-right .square_medium{
+    z-index: 10;
 }
 
 .dropdown-menu .dropdown-content {
