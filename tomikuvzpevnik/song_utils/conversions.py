@@ -113,22 +113,26 @@ def base_to_tex(text: str, song_title=None, song_artist=None, capo=0):
 
 
 def html_to_base(html_text):
-    html_text = html_text.replace("\n","")
+    html_text = html_text.replace("\n", "")
     soup = BeautifulSoup(html_text, "html.parser")
 
-    song = soup.find("div",class_="song_container")
+    song = soup.find("div", class_="song_container")
     if not song is None:
         soup = song
 
     verses = []
 
-    for verse in soup.findAll("p",{"class":["verse","chorus"]}):
+    for verse in soup.findAll("p", {"class": ["verse", "chorus"]}):
         for br in verse.find_all("br"):
             br.replace_with("\n")
 
-        for span in verse.find_all("span", {"class":"innerchord"}):
+        for span in verse.find_all("span", {"class": "innerchord"}):
             chord = span.get_text()
             span.replace_with(f"[{chord}]")
+
+        for span in verse.find_all("span", {"class": "comment"}):
+            chord = span.get_text()
+            span.replace_with(f"{{{chord}}}")
 
         processed_text = verse.get_text()
         processed_text = processed_text.strip("\n")
@@ -139,6 +143,7 @@ def html_to_base(html_text):
             verses.append(processed_text)
 
     return "\n\n".join(verses)
+
 
 def ultimate_to_base(url):
     try:
@@ -164,20 +169,20 @@ def ultimate_to_base(url):
     byArtI = song_html.find('"byArtist": {')
     byArtE = song_html[byArtI:].find("}")
     titleI = song_html[byArtI:].find('"name":"')
-    titleE = song_html[titleI+byArtI+8:].find('"')
-    artist = song_html[titleI+byArtI:8+titleI+byArtI+titleE].replace('"name":"','')
+    titleE = song_html[titleI + byArtI + 8 :].find('"')
+    artist = song_html[titleI + byArtI : 8 + titleI + byArtI + titleE].replace('"name":"', "")
     # print(artist)
     byArtI = byArtI + byArtE
     titleI = song_html[byArtI:].find('"name":"')
-    titleE = song_html[titleI+byArtI+8:].find('"')
-    title = song_html[titleI+byArtI:8+titleI+byArtI+titleE].replace('"name":"','')
+    titleE = song_html[titleI + byArtI + 8 :].find('"')
+    title = song_html[titleI + byArtI : 8 + titleI + byArtI + titleE].replace('"name":"', "")
 
-    firstWord = '{&quot;content&quot;:&quot;'
-    lastWord = '&quot;,&quot;revision_id&quot'
-    song_html = song_html[song_html.find(firstWord)+len(firstWord)+1:]
+    firstWord = "{&quot;content&quot;:&quot;"
+    lastWord = "&quot;,&quot;revision_id&quot"
+    song_html = song_html[song_html.find(firstWord) + len(firstWord) + 1 :]
     song_html = song_html[:10000]
-    song_html = song_html[:song_html.find(lastWord)]
-    song_html = song_html.replace("\\r\\n","\n")
+    song_html = song_html[: song_html.find(lastWord)]
+    song_html = song_html.replace("\\r\\n", "\n")
 
     song_html = html.unescape(song_html)
 
@@ -185,47 +190,42 @@ def ultimate_to_base(url):
     chords = None
     for line in song_html.split("\n")[1:300]:
         line = line.rstrip()
-        if (
-            not line.startswith("[tab]")
-            and line.startswith("[")
-            and line.endswith("]")
-            and not line.startswith("[ch]")
-        ):
+        if not line.startswith("[tab]") and line.startswith("[") and line.endswith("]") and not line.startswith("[ch]"):
             line = line.strip("[]")
             # Start of verse
-            if len(output_text)>0:
+            if len(output_text) > 0:
                 output_text.append("")
-            if not line[:5] in ['Bridg','Verse','Choru','Pre-C']:
+            if not line[:5] in ["Bridg", "Verse", "Choru", "Pre-C"]:
                 # using sart because verse can be numbered
-                output_text.append("[" + line + "]")
-            elif line == 'Chorus':
+                output_text.append("{" + line + "}")
+            elif line == "Chorus":
                 output_text.append("*")
         elif line.startswith("[tab]"):
             # Line contains chords for the next line
             line = line.removeprefix("[tab]")
             chords = re.findall(r"([ ]*)\[ch\]([^\[]*)\[/ch\]", line)
-            chords = [(len(spaces),chord) for spaces,chord in chords]
+            chords = [(len(spaces), chord) for spaces, chord in chords]
         elif line == "":
             pass
         elif not chords is None:
             # Line to apply chords to
-            line = line.removesuffix("[/tab]")   
+            line = line.removesuffix("[/tab]")
 
             line_segments = []
             start_index = 0
             prior_offset = 0
-            for space,chord in chords:
+            for space, chord in chords:
                 space = space + prior_offset
-                line_segments.append(line[start_index:start_index+space])
+                line_segments.append(line[start_index : start_index + space])
                 start_index += space
-                line_segments.append(f"[{chord}]") 
+                line_segments.append(f"[{chord}]")
                 prior_offset = len(chord)
             if start_index < len(line):
-                line_segments.append(line[start_index:])   
+                line_segments.append(line[start_index:])
             line = "".join(line_segments)
 
-            line = line.replace("[ch]","[")
-            line = line.replace("[/ch]","]")
+            line = line.replace("[ch]", "[")
+            line = line.replace("[/ch]", "]")
             output_text.append(line)
             chords = None
         else:
@@ -235,10 +235,10 @@ def ultimate_to_base(url):
             output_text.append(line)
 
     return {
-        "title":title,
-        "artist":artist,
-        "lyrics":"\n".join(output_text),
-        "capo":0,
+        "title": title,
+        "artist": artist,
+        "lyrics": "\n".join(output_text),
+        "capo": 0,
     }
 
 
