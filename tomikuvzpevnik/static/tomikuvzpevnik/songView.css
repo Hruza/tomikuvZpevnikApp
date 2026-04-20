@@ -40,6 +40,9 @@
     gap: 10px;
 }
 
+.header {
+    overflow: visible;
+}
 /* chords */
 
 .chord {
@@ -148,7 +151,7 @@
 }
 
 .dropdown-menu {
-    position: fixed;
+    position: absolute;
     box-sizing: border-box;
     padding-left: 10px;
     padding-right: 10px;
